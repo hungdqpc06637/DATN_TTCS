@@ -29,6 +29,7 @@ import com.poly.dto.Forgotpassword;
 import com.poly.entity.Account;
 import com.poly.entity.Authorities;
 import com.poly.model.ChangePasswordModel;
+import com.poly.repository.AccountRepository;
 import com.poly.service.AccountService;
 import com.poly.util.EmailUtil;
 
@@ -46,6 +47,9 @@ public class AuthController {
 
 	@Autowired
 	EmailUtil emailUil;
+	
+	@Autowired
+	private AccountRepository accountRepository;
 	
 	private final EmailUtil emailUtil;
 	
@@ -105,24 +109,30 @@ public class AuthController {
 
 	@PostMapping("/forgot-password")
 	public ResponseEntity<?> sendOtp(@RequestParam String email) {
-		if (!isValidEmail(email)) {
-			return ResponseEntity.badRequest().body("Địa chỉ email không hợp lệ.");
-		}
+	    if (!isValidEmail(email)) {
+	        return ResponseEntity.badRequest().body("Địa chỉ email không hợp lệ.");
+	    }
 
-		try {
-			String otp = emailUil.sendOtpEmail(email, "Mã OTP của bạn");
-			Forgotpassword forgotPassword = new Forgotpassword(email, otp, LocalDateTime.now());
-			otpStorage.put(email, forgotPassword); // Lưu trữ mã OTP
+	    Optional<Account> accountOpt = accountRepository.findByEmail(email);
+	    if (accountOpt.isEmpty()) {
+	        return ResponseEntity.badRequest().body("Email không tồn tại trong hệ thống.");
+	    }
 
-			// Log để kiểm tra
-			System.out.println("Đã gửi và lưu mã OTP cho email: " + email + ", OTP: " + otp);
-			System.out.println("Nội dung otpStorage sau khi lưu: " + otpStorage); // Log nội dung của otpStorage
-			return ResponseEntity.ok("Mã OTP đã được gửi đến email: " + email);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Có lỗi xảy ra khi gửi OTP: " + e.getMessage());
-		}
+
+	    try {
+	        String otp = emailUtil.sendOtpEmail(email, "Mã OTP của bạn");
+	        Forgotpassword forgotPassword = new Forgotpassword(email, otp, LocalDateTime.now());
+	        otpStorage.put(email, forgotPassword);
+
+	        System.out.println("Đã gửi và lưu mã OTP cho email: " + email + ", OTP: " + otp);
+	        System.out.println("Nội dung otpStorage sau khi lưu: " + otpStorage);
+	        return ResponseEntity.ok("Mã OTP đã được gửi đến email: " + email);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Có lỗi xảy ra khi gửi OTP: " + e.getMessage());
+	    }
 	}
+
 
 	@PostMapping("/verify-otp")
 	public ResponseEntity<?> verifyOtp(@RequestParam String email, @RequestParam String otp) {

@@ -10,17 +10,20 @@ import com.poly.entity.Account;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
+    // Kiểm tra email có tồn tại
+    boolean existsByEmail(String email);
+
+    // Các truy vấn khác
     @Query("SELECT acc FROM Account acc WHERE acc.username = ?1 AND acc.password = ?2")
     Account findByUsernameAndPassword(String username, String password);
 
     Account findByUsername(String username);
 
     Optional<Account> findByEmail(String email);
-    
-    Optional<Account> findByPhone(String phone);  // Nếu muốn đồng bộ, bạn cũng có thể đổi findByPhone
 
     @Modifying
     @Transactional
     @Query("UPDATE Account acc SET acc.password = ?1 WHERE acc.email = ?2")
     int updatePasswordByEmail(String newPassword, String email);
 }
+

@@ -236,65 +236,76 @@ export default function Contact() {
                 </span>
               </div>
               <div className="inputs mt-5">
-                <form onSubmit={handleSubmit} >
+                <form onSubmit={handleSubmit}>
                   <div className="mb-4 form-group">
-                    <h6 className="input-label text-qgray capitalize text-[13px] font-normal block mb-2 ">
+                    <h6 className="input-label text-blue-600 text-sm font-semibold block mb-2">
                       Họ và tên*
                     </h6>
                     <input
-                      className="form-control"
+                      className="form-control w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-500 focus:outline-none transition duration-200"
                       placeholder="Nhập họ và tên của bạn ở đây..."
                       name="fullName"
                       type="text"
                       value={formData.name}
                       onChange={handleChange}
-                      style={{ width: '100%', padding: '7px 15px', border: '1px solid #a9a9a9' }}
+                      style={{ backgroundColor: "#f9f9f9" }}
                     />
                   </div>
                   <div className="mb-4">
+                    <h6 className="input-label text-blue-600 text-sm font-semibold block mb-2">
+                      Địa chỉ email*
+                    </h6>
                     <input
-                      label="Địa chỉ email*"
+                      className="form-control w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-500 focus:outline-none transition duration-200"
                       placeholder="info@quomodosoft.com"
                       name="email"
-                      type="text"
+                      type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      style={{ width: '100%', padding: '7px 15px', border: '1px solid #a9a9a9' }}
+                      style={{ backgroundColor: "#f9f9f9" }}
                     />
                   </div>
                   <div className="mb-4">
+                    <h6 className="input-label text-blue-600 text-sm font-semibold block mb-2">
+                      Chủ đề
+                    </h6>
                     <input
-
+                      className="form-control w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-500 focus:outline-none transition duration-200"
                       placeholder="Nhập chủ đề của bạn ở đây..."
                       name="subject"
                       type="text"
                       value={formData.subject}
                       onChange={handleChange}
-                      style={{ width: '100%', padding: '7px 15px', border: '1px solid #a9a9a9' }}
+                      style={{ backgroundColor: "#f9f9f9" }}
                     />
                   </div>
                   <div className="mb-5">
-                    <h6 className="input-label text-qgray capitalize text-[13px] font-normal block mb-2 ">
+                    <h6 className="input-label text-blue-600 text-sm font-semibold block mb-2">
                       Tin nhắn*
                     </h6>
                     <textarea
+                      className="form-control w-full h-[105px] p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-500 focus:outline-none transition duration-200 placeholder:text-sm"
                       placeholder="Nhập tin nhắn của bạn ở đây"
-                      className="w-full h-[105px] focus:ring-0 focus:outline-none p-3 border border-qgray-border placeholder:text-sm"
                       value={formData.message}
                       onChange={handleChange}
                       name="message"
-                      style={{ width: '100%', padding: '7px 15px', border: '1px solid #a9a9a9' }}
+                      style={{ backgroundColor: "#f9f9f9" }}
                     ></textarea>
                   </div>
                   <div>
-                    <button type="submit" disabled={isSubmitting} style={{ width: '100%', backgroundColor: 'black', color: 'white', padding: '10px 15px' }} >
-
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-blue-600 text-white py-3 px-5 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:outline-none transition duration-200"
+                      style={{ fontWeight: "bold" }}
+                    >
                       {isSubmitting ? "Đang gửi..." : "Gửi ngay"}
-
                     </button>
                   </div>
                 </form>
               </div>
+
+
             </div>
 
           </div>

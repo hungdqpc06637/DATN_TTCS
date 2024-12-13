@@ -100,133 +100,129 @@ export default function About() {
           />
         </div>
 
-        <div className="aboutus-wrapper w-full">
-          <div className="container-x mx-auto">
-            <div className="w-full min-h-[665px] lg:flex lg:space-x-12 items-center pb-10 lg:pb-0">
-              <div className="md:w-[570px] w-full md:h-[560px] h-auto rounded overflow-hidden my-5 lg:my-0">
-                <img
-                  src={`/assets/images/product-img-23.jpg`}
-                  alt="about"
-                  className="w-full h"
-                />
-              </div>
-              <div className="content flex-1">
-                <h1 className="text-[18px] font-medium text-qblack mb-2.5">
-                  Kinh doanh thương mại điện tử là gì?
-                </h1>
-
-                <ul className="text-[15px] text-qgraytwo leading-7 list-disc ml-5 mb-5">
-                  <li>Thiết kế thanh lịch và hiện đại, phù hợp với môi trường văn phòng</li>
-                </ul>
-
-
-                <Link to="/contact">
-                  <div className="w-[121px] h-10">
-                    <span className="yellow-btn">Liên hệ</span>
-                  </div>
-                </Link>
-              </div>
-            </div>
+        <div className="aboutus-wrapper w-full bg-gray-100 py-10">
+  <div className="container-x mx-auto">
+    <div className="w-full lg:flex lg:space-x-12 items-center pb-10 lg:pb-0">
+      <div className="md:w-[570px] w-full md:h-[560px] h-auto rounded overflow-hidden my-5 lg:my-0">
+        {/* Thay đổi src cho hình ảnh nếu cần */}
+        <img
+          src="/assets/images/product-img-23.jpg"
+          alt="about"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="content flex-1 px-4">
+        <h1 className="text-[22px] font-semibold text-qblack mb-4">
+          Kinh doanh thương mại điện tử là gì?
+        </h1>
+        <ul className="text-[15px] text-qgraytwo leading-7 list-disc ml-5 mb-6">
+          <li>Thiết kế thanh lịch và hiện đại, phù hợp với môi trường văn phòng</li>
+        </ul>
+        <Link to="/contact" className="inline-block">
+          <div className="w-[121px] h-10 bg-qyellow rounded flex items-center justify-center">
+            <span className="text-white font-medium">Liên hệ</span>
           </div>
-        </div>
+        </Link>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <div className="customer-feedback w-full bg-white py-[60px]">
-          <div className="title flex justify-center mb-5">
-            <h1 className="text-[30px] font-semibold text-qblack">
-              Phản hồi của khách hàng
-            </h1>
-          </div>
-          <div className="feedback-slider-wrapper w-vw relative overflow-hidden">
-            <SimpleSlider selector={slider} settings={settings}>
-              {ratings.length > 0 ? (
-                ratings.map((rating) => (
-                  <div key={rating.id} className="item h-[385px] bg-primarygray sm:px-10 sm:py-9 p-2">
-                    <div className="flex flex-col justify-between h-full">
-                      <div className="rating flex space-x-1 items-center">
-                        <div className="flex items-center">
-                          {/* Hiển thị số sao dựa trên dữ liệu */}
-                          {[...Array(parseInt(rating.stars))].map((_, index) => (
-                            <Star key={index} w="20" h="20" />
-                          ))}
-                        </div>
-                        <span className="text-[13px] text-qblack">({rating.stars}.0)</span>
-                      </div>
-                      {/* Hiển thị nội dung đánh giá */}
-                      <div className="text-[15px] text-qgraytwo leading-[30px] text-justify line-clamp-6">
-                        {rating.review}
-                      </div>
-                      <div className="flex items-center space-x-2.5 mt-3">
-                        <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
-                          <img
-                            src={rating.orders.account.image ? `/assets/images/${rating.orders.account.image}` : "/assets/images/comment-user-1.png"}
-                            alt="user"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+<div className="customer-feedback w-full bg-white py-10">
+  <div className="title flex justify-center mb-8">
+    <h1 className="text-[28px] font-semibold text-qblack">Phản hồi của khách hàng</h1>
+  </div>
 
-                        <div>
-                          <p className="text-[18px] text-qblack font-medium">
-                            {rating.orders.account.username}
-                          </p>
-                          <p className="text-qgraytwo text-[13px]">
-                            {rating.orders.account.location}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>Không có đánh giá 5 sao nào.</p>
-              )}
-            </SimpleSlider>
+  <div className="feedback-slider-wrapper w-full relative overflow-hidden">
+    <SimpleSlider selector={slider} settings={settings}>
+      {ratings.length > 0 ? (
+        ratings.map((rating) => (
+          <div key={rating.id} className="item bg-primarygray p-6 rounded-lg shadow-md mb-6">
+            <div className="flex flex-col justify-between h-full">
+              {/* Rating section */}
+              <div className="rating flex items-center space-x-2">
+                <div className="flex">
+                  {[...Array(parseInt(rating.stars))].map((_, index) => (
+                    <Star key={index} w="20" h="20" />
+                  ))}
+                </div>
+                <span className="text-[13px] text-qblack">({rating.stars}.0)</span>
+              </div>
 
-            <div className="slider-btns flex justify-center mt-[40px]">
-              <div className="flex space-x-5 item-center">
-                <button
-                  onClick={prev}
-                  type="button"
-                  className="w-[48px] h-[48px] rounded-full overflow-hidden flex justify-center items-center border border-qyellow text-qyellow focus:bg-qyellow focus:text-white"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={next}
-                  type="button"
-                  className="w-[48px] h-[48px] rounded-full overflow-hidden flex justify-center items-center border border-qyellow text-qyellow focus:bg-qyellow focus:text-white"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 transform rotate-180"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
+              {/* Review content */}
+              <div className="text-[15px] text-qgraytwo leading-6 mt-4 line-clamp-4">
+                {rating.review || "Không có nội dung đánh giá."}
+              </div>
+
+              {/* User info section */}
+              <div className="flex items-center mt-6 space-x-4">
+                <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
+                  <img
+                    src={
+                      rating.orders.account.image
+                        ? `/assets/images/${rating.orders.account.image}`
+                        : "/assets/images/comment-user-1.png"
+                    }
+                    alt={rating.orders.account.username || "Người dùng"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-[18px] text-qblack font-medium">
+                    {rating.orders.account.username || "Ẩn danh"}
+                  </p>
+                  <p className="text-qgraytwo text-[13px]">
+                    {rating.orders.account.location || "Địa điểm không xác định"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        ))
+      ) : (
+        <p className="text-center text-qgraytwo">Không có đánh giá 5 sao nào.</p>
+      )}
+    </SimpleSlider>
+
+    {/* Navigation buttons for the slider */}
+    <div className="slider-btns flex justify-center mt-8">
+      <div className="flex space-x-4">
+        <button
+          onClick={prev}
+          className="w-12 h-12 rounded-full border border-qyellow flex items-center justify-center text-qyellow hover:bg-qyellow hover:text-white transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={next}
+          className="w-12 h-12 rounded-full border border-qyellow flex items-center justify-center text-qyellow hover:bg-qyellow hover:text-white transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 transform rotate-180"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
         <div className="container-x mx-auto my-[60px]">
           <div
             data-aos="fade-down"
