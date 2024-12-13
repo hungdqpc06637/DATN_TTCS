@@ -15,7 +15,7 @@ import PasswordTab from "./tabs/PasswordTab";
 import ProfileTab from "./tabs/ProfileTab";
 import WishlistTab from "./tabs/WishlistTab";
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 
 export default function Profile() {
   const location = useLocation();
@@ -46,113 +46,64 @@ export default function Profile() {
 
   return (
     <LayoutHomeFive childrenClasses="pt-0 pb-0">
-      <div className="profile-page-wrapper w-full">
-        <div className="container-x mx-auto">
-          <div className="w-full my-10">
-            <BreadcrumbCom
-              paths={[
-                { name: "home", path: "/" },
-                { name: "profile", path: "/profile" },
-              ]}
-            />
-            <div className="w-full bg-white px-10 py-9">
-              <div className="title-area w-full flex justify-between items-center">
-                <h1 className="text-[22px] font-bold text-qblack">
-                  Trang tổng quan của bạn
-                </h1>
-              </div>
-              <div className="profile-wrapper w-full mt-8 flex space-x-10">
-                <div className="w-[236px] min-h-[600px] border-r border-[rgba(0, 0, 0, 0.1)]">
-                  <div className="flex flex-col space-y-10">
-                    <div className="item group">
-                      <Link to="/profile#dashboard">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-                          <span>
-                            <IcoDashboard />
-                          </span>
-                          <span className="font-normal text-base">
-                            Trang tổng quan
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
-                    <div className="item group">
-                      <Link to="/profile#profile">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-                          <span>
-                            <IcoPeople />
-                          </span>
-                          <span className="font-normal text-base">
-                            Thông tin cá nhân
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
-                    <div className="item group">
-                      <Link to="/profile#order">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-                          <span>
-                            <IcoCart />
-                          </span>
-                          <span className=" font-normal text-base">Đặt hàng</span>
-                        </div>
-                      </Link>
-                    </div>
-                    <div className="item group">
-                      <Link to="/profile#wishlist">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-                          <span>
-                            <IcoLove />
-                          </span>
-                          <span className=" font-normal text-base">
-                            Danh sách yêu thích
-                          </span>
-                        </div>
-                      </Link>
-                    </div><div className="item group">
-                      <Link to="/profile#address">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-                          <span>
-                            <IcoAdress />
-                          </span>
-                          <span className=" font-normal text-base">
-                            Địa chỉ
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
-                    <div className="item group">
-                      <Link to="/profile#password">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-                          <span>
-                            <IcoPassword />
-                          </span>
-                          <span className=" font-normal text-base">
-                            Thay đổi mật khẩu
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
+      <div className="profile-page-wrapper w-full bg-gray-50">
+        <div className="container-x mx-auto py-10">
+          <BreadcrumbCom
+            paths={[
+              { name: "home", path: "/" },
+              { name: "profile", path: "/profile" },
+            ]}
+          />
+          <div className="w-full bg-white shadow-md rounded-lg p-8">
+            {/* Header */}
+            <div className="title-area flex justify-between items-center border-b pb-4">
+              <h1 className="text-lg font-semibold text-gray-800">
+                Trang tổng quan của bạn
+              </h1>
+            </div>
+
+            {/* Main Content */}
+            <div className="profile-wrapper w-full mt-6 flex space-x-8">
+              {/* Sidebar */}
+              <div className="w-[240px] min-h-[600px] bg-gray-100 shadow-inner rounded-lg p-6">
+                <div className="flex flex-col space-y-6">
+                  {/* Sidebar Links */}
+                  {[
+                    { to: "/profile#dashboard", icon: <IcoDashboard />, label: "Trang tổng quan" },
+                    { to: "/profile#profile", icon: <IcoPeople />, label: "Thông tin cá nhân" },
+                    { to: "/profile#order", icon: <IcoCart />, label: "Đặt hàng" },
+                    { to: "/profile#wishlist", icon: <IcoLove />, label: "Danh sách yêu thích" },
+                    { to: "/profile#address", icon: <IcoAdress />, label: "Địa chỉ" },
+                    { to: "/profile#password", icon: <IcoPassword />, label: "Thay đổi mật khẩu" },
+                  ].map((item, index) => (
+                    <Link key={index} to={item.to}>
+                      <div className="flex items-center space-x-3 p-3 hover:bg-gray-200 rounded-lg transition">
+                        <span className="text-gray-600">{item.icon}</span>
+                        <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                <div className="flex-1">
-                  <div className="item-body dashboard-wrapper w-full">
-                    {active === "dashboard" ? (
-                      <Dashboard />
-                    ) : active === "profile" ? (
-                      <ProfileTab />
-                    ) : active === "order" ? (
-                      <OrderTab accountId={accountId} />
-                    ) : active === "wishlist" ? (
-                      <WishlistTab accountId={accountId}  />
-                    ) : active === "address" ? (
-                      <AddressesTab accountId={accountId} />
-                    ) : active === "password" ? (
-                      <PasswordTab />
-                    ) : (
-                      ""
-                    )}
-                  </div>
+              </div>
+
+              {/* Content Area */}
+              <div className="flex-1">
+                <div className="item-body dashboard-wrapper w-full bg-gray-50 p-6 rounded-lg shadow">
+                  {active === "dashboard" ? (
+                    <Dashboard />
+                  ) : active === "profile" ? (
+                    <ProfileTab />
+                  ) : active === "order" ? (
+                    <OrderTab accountId={accountId} />
+                  ) : active === "wishlist" ? (
+                    <WishlistTab accountId={accountId} />
+                  ) : active === "address" ? (
+                    <AddressesTab accountId={accountId} />
+                  ) : active === "password" ? (
+                    <PasswordTab />
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>
@@ -160,5 +111,6 @@ export default function Profile() {
         </div>
       </div>
     </LayoutHomeFive>
+
   );
 }

@@ -40,17 +40,15 @@ export default function ProductCardStyleOne({ data = {}, type = 1 }) {
       <div className="product-card-details p-5">
         {/* Title */}
         <h4
-          className="text-2xl font-semibold text-gray-900 cursor-pointer group-hover:text-blue-600 transition-all"
+          className="text-sm font-semibold text-gray-900 cursor-pointer group-hover:text-blue-600 transition-all truncate"
           onClick={handleTitleClick}
         >
           {data.name || 'Tên sản phẩm'}
         </h4>
-
         {/* Price */}
         <div className="product-card-price mt-4">
           <span className="text-lg font-bold text-gray-900">{formatPrice(data.price)}</span>
         </div>
-
         {/* Button "View Detail" */}
         <div className="mt-6">
           <button

@@ -10,7 +10,6 @@ export default function Dashboard() {
   const [accountId, setAccountId] = useState(null);
   const [username, setUsername] = useState(null);
 
-  // Function to decode token and extract account ID
   const getAccountIdFromToken = () => {
     const token = Cookies.get("token");
     if (token) {
@@ -18,21 +17,18 @@ export default function Dashboard() {
         const decodedToken = jwtDecode(token);
         console.log(decodedToken)
         setUsername(decodedToken.sub)
-        setAccountId(decodedToken.accountId); // Assuming `sub` contains the accountId
+        setAccountId(decodedToken.accountId); 
       } catch (error) {
         console.error("Error decoding token:", error);
       }
     }
   };
-
-  // Fetch the order counts from the API
   const fetchOrderCounts = async () => {
-    if (!accountId) return; // Wait for accountId to be set
+    if (!accountId) return;
 
     const token = Cookies.get("token");
 
     try {
-      // Fetch new orders count
       const newOrdersResponse = await axios.get(
         `http://localhost:8080/api/user/orders/count/new/${accountId}`,
         {
@@ -40,8 +36,6 @@ export default function Dashboard() {
         }
       );
       setNewOrdersCount(newOrdersResponse.data);
-
-      // Fetch delivering orders count
       const deliveringOrdersResponse = await axios.get(
         `http://localhost:8080/api/user/orders/count/delivering/${accountId}`,
         {
@@ -49,8 +43,6 @@ export default function Dashboard() {
         }
       );
       setDeliveringOrdersCount(deliveringOrdersResponse.data);
-
-      // Fetch complete orders count
       const completeOrdersResponse = await axios.get(
         `http://localhost:8080/api/user/orders/count/complete/${accountId}`,
         {
@@ -58,18 +50,15 @@ export default function Dashboard() {
         }
       );
       setCompleteOrdersCount(completeOrdersResponse.data);
-
     } catch (error) {
       console.error("Error fetching order counts:", error);
     }
   };
 
-  // Get accountId when component mounts or token changes
   useEffect(() => {
     getAccountIdFromToken();
   }, []);
 
-  // Fetch order counts when accountId is available
   useEffect(() => {
     if (accountId) {
       fetchOrderCounts();
