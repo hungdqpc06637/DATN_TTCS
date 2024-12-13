@@ -46,24 +46,38 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
 	// DTO to map incoming and outgoing message
 	public static class MessageData {
-		private String role;
-		private String content;
+        private String sender;
+        private String content;
+        private String role;
 
-		// Getters and setters
-		public String getRole() {
-			return role;
-		}
+        // Constructor mặc định không tham số (cần thiết cho Jackson)
+        public MessageData() {
+        }
 
-		public void setRole(String role) {
-			this.role = role;
-		}
+        // Getters và setters
+        public String getSender() {
+            return sender;
+        }
 
-		public String getContent() {
-			return content;
-		}
+        public void setSender(String sender) {
+            this.sender = sender;
+        }
 
-		public void setContent(String content) {
-			this.content = content;
-		}
-	}
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+    }
+
 }

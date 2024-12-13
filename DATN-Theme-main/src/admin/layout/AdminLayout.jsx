@@ -23,6 +23,7 @@ const AdminLayout = ({ children }) => {
     { to: '/admin/category', label: 'Loại sản phẩm', icon: <FaTags /> },
     { to: '/admin/size', label: 'Kích thước', icon: <FaRuler /> },
     { to: '/admin/flash-sales', label: 'Flash sales', icon: <FaBolt /> },
+    { to: '/admin/chatAdmin', label: 'Chat box', icon: <FaBolt /> },
     { label: 'Đăng xuất', icon: <FaSignOutAlt />, action: 'logout' }
   ];
 

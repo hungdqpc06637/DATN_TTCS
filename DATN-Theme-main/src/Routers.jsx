@@ -42,7 +42,7 @@ import Newpassword from "./components/Auth/Forgotpassword/newpassword.jsx";
 import Succes from "./components/CheakoutPage/succes.jsx";
 import Failer from "./components/CheakoutPage/failer.jsx";
 import ChatApp from "./components/Chat/ChatApp.jsx";
-import AdminChatApp from "./components/Chat/AdminChatApp.jsx";
+import AdminChatApp from "./admin/adminChatbox/AdminChatApp.jsx";
 
 // Tạo một component cho các route admin với layout riêng
 const AdminRoutes = () => (
@@ -57,6 +57,7 @@ const AdminRoutes = () => (
       <Route path="/size" element={<AdminSize />} />
       <Route path="/color" element={<AdminColor />} />
       <Route path="/flash-sales" element={<AdminFlashSales />} />
+      <Route path="/chatAdmin" element={<AdminChatApp />} />
     </Routes>
   </AdminLayout>
 );
@@ -117,7 +118,7 @@ export default function Routers() {
       <Route exact path="/terms-condition" element={<TermsCondition />} />
       <Route exact path="/forgot-password" element={<Forgotpassword />} />
       <Route path="/chatUser" element={<ChatApp />} />
-      <Route path="/chatAdmin" element={<AdminChatApp />} />
+      
       {/* Kiểm tra token trước khi cho phép vào các trang cần đăng nhập */}
       <Route
         exact
@@ -168,7 +169,6 @@ export default function Routers() {
 
       {/* Kiểm tra quyền admin trước khi cho phép vào trang admin */}
       <Route path="/admin/*" element={(isAdmin || isStaff) ? <AdminRoutes /> : <Navigate to="/" />} />
-
     </Routes>
   );
 }

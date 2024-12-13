@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
 import useWebSocket from './useWebSocket';
-import LayoutHomeFive from '../Partials/LayoutHomeFive';
 
 const ChatApp = () => {
     const { messages, sendMessage, isConnected } = useWebSocket('ws://localhost:8080/chat');
     const [input, setInput] = useState('');
-    const [role, setRole] = useState('user');  // Đặt role của người dùng là 'user' mặc định
-    const [isChatVisible, setIsChatVisible] = useState(false);  // Trạng thái hiển thị chat
+    const [role, setRole] = useState('user'); // Vai trò mặc định
+    const [username, setUsername] = useState('Guest'); // Tên người dùng mặc định
+    const [isChatVisible, setIsChatVisible] = useState(false);
+
+    // Lấy token từ cookie và giải mã
+    useEffect(() => {
+        const token = Cookies.get('token'); // Lấy token từ cookie
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token); // Giải mã token
+                setRole(decodedToken.roles || 'user'); // Thiết lập vai trò
+                setUsername(decodedToken.sub || 'Guest'); // Thiết lập tên người dùng
+            } catch (error) {
+                console.error("Token decoding error:", error);
+            }
+        }
+    }, []);
 
     const handleSend = () => {
         if (input.trim()) {
             const messageData = {
-                role: role, // Gửi vai trò 'user' với mỗi tin nhắn
+                sender: username, // Gửi tên người dùng
+                role: role, // Gửi vai trò
                 content: input,
             };
             sendMessage(JSON.stringify(messageData)); // Gửi thông điệp dưới dạng JSON
@@ -20,49 +37,47 @@ const ChatApp = () => {
     };
 
     const toggleChat = () => {
-        setIsChatVisible(!isChatVisible); // Đảo trạng thái hiển thị của chat
+        setIsChatVisible(!isChatVisible);
     };
 
     return (
-        <LayoutHomeFive>
-            <div style={styles.chatContainer}>
-                <button onClick={toggleChat} style={styles.toggleButton}>
-                    {isChatVisible ? 'Tắt Chat' : 'Bật Chat'}
-                </button>
+        <div style={styles.chatContainer}>
+            <button onClick={toggleChat} style={styles.toggleButton}>
+                {isChatVisible ? 'Tắt Chat' : 'Bật Chat'}
+            </button>
 
-                {isChatVisible && (
-                    <div style={styles.chatBox}>
-                        <h2>Chat box</h2>
-                        <div style={styles.messagesContainer}>
-                            {messages.map((msg, index) => {
-                                const isUserMessage = msg.role === 'user';
-                                return (
-                                    <div key={index} style={styles.message}>
-                                        {/* Hiển thị 'User' hoặc 'Admin' tuỳ theo vai trò */}
-                                        <strong style={{ color: isUserMessage ? 'black' : 'blue' }}>
-                                            {isUserMessage ? 'User: ' : 'Admin: '}
-                                        </strong>
-                                        {msg.content}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        <div style={styles.inputContainer}>
-                            <input
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                style={styles.input}
-                                placeholder="Type a message"
-                            />
-                            <button onClick={handleSend} disabled={!isConnected} style={styles.sendButton}>
-                                Gửi
-                            </button>
-                        </div>
+            {isChatVisible && (
+                <div style={styles.chatBox}>
+                    <h2>Chat Box</h2>
+                    <div style={styles.messagesContainer}>
+                        {messages.map((msg, index) => {
+                            const isUserMessage = msg.role === 'user';
+                            return (
+                                <div key={index} style={styles.message}>
+                                    {/* Hiển thị tên người chat thay vì vai trò */}
+                                    <strong style={{ color: isUserMessage ? 'black' : 'blue' }}>
+                                        {msg.sender || (isUserMessage ? 'User' : 'Admin')}:
+                                    </strong>
+                                    {msg.content}
+                                </div>
+                            );
+                        })}
                     </div>
-                )}
-            </div>
-        </LayoutHomeFive>
+                    <div style={styles.inputContainer}>
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            style={styles.input}
+                            placeholder="Type a message"
+                        />
+                        <button onClick={handleSend} disabled={!isConnected} style={styles.sendButton}>
+                            Gửi
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

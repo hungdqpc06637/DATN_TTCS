@@ -29,7 +29,7 @@ function App() {
   return (
     <>
       <Routers />
-      <ChatApp />  {/* Chat sẽ hiển thị ở mọi trang */}
+      <ChatApp />
       <ToastContainer />
     </>
   );
