@@ -69,7 +69,6 @@ export default function ProductView() {
       });
   }, [id]);
 
-  // Update available sizes when color changes
   useEffect(() => {
     if (productDetails) {
       const sizesForColor = productDetails.sizes.filter(size => size.color.name === selectedColor);
@@ -83,28 +82,15 @@ export default function ProductView() {
   }, [selectedColor, productDetails]);
 
   const increment = () => {
-    // Lấy giỏ hàng từ cookie
     const cartItems = JSON.parse(Cookies.get('cart') || '[]');
-
-    // Tìm thông tin kích cỡ được chọn từ `availableSizes`
     const selectedSizeInfo = availableSizes.find(size => size.name === selectedSize);
-
-    // Kiểm tra nếu không có kích cỡ được chọn hoặc không có tồn kho
     if (!selectedSizeInfo || selectedSizeInfo.quantityInStock <= 0) {
       toast.error('Kích cỡ không hợp lệ hoặc hết hàng.');
       return;
     }
-
-    // Tìm sản phẩm hiện tại trong giỏ hàng
     const existingItem = cartItems.find(item => item.size.id === selectedSizeInfo.id);
-
-    // Tổng số lượng hiện tại trong giỏ hàng
     const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
-
-    // Tổng số lượng mới sau khi tăng
     const newTotalQuantity = currentQuantityInCart + quantity + 1;
-
-    // Kiểm tra tồn kho
     if (newTotalQuantity <= selectedSizeInfo.quantityInStock) {
       setQuantity(prev => prev + 1);
     } else {

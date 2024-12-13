@@ -41,6 +41,8 @@ import Otp from "./components/Auth/Forgotpassword/otp.jsx";
 import Newpassword from "./components/Auth/Forgotpassword/newpassword.jsx";
 import Succes from "./components/CheakoutPage/succes.jsx";
 import Failer from "./components/CheakoutPage/failer.jsx";
+import ChatApp from "./components/Chat/ChatApp.jsx";
+import AdminChatApp from "./components/Chat/AdminChatApp.jsx";
 
 // Tạo một component cho các route admin với layout riêng
 const AdminRoutes = () => (
@@ -111,11 +113,11 @@ export default function Routers() {
       <Route exact path="/all-products" element={<AllProductPage />} />
       <Route exact path="/products/:id" element={<SingleProductPage />} />
       <Route exact path="/cart" element={<CardPage />} />
-
       <Route exact path="/become-saller" element={<BecomeSaller />} />
       <Route exact path="/terms-condition" element={<TermsCondition />} />
       <Route exact path="/forgot-password" element={<Forgotpassword />} />
-
+      <Route path="/chatUser" element={<ChatApp />} />
+      <Route path="/chatAdmin" element={<AdminChatApp />} />
       {/* Kiểm tra token trước khi cho phép vào các trang cần đăng nhập */}
       <Route
         exact
