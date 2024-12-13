@@ -37,7 +37,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeRequests(authorizeRequests -> 
                 authorizeRequests
-                    .requestMatchers("/api/login","/account/info", "/api/signup","/api/forgot-password","/api/verify-otp", "/api/update-password","/api/update-password-profile","/api/guest/products/search", "/api/user/payments/vnpay/callback" , "/api/send").permitAll()
+                    .requestMatchers("/api/login","/account/info", "/api/signup","/api/forgot-password","/api/verify-otp", "/api/update-password","/api/update-password-profile","/api/guest/products/search", "/api/user/payments/vnpay/callback" , "/api/send" , "/chat").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/staff/**").hasAnyRole("ADMIN", "STAFF")
                     .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "STAFF", "USER")
