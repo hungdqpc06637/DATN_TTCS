@@ -22,7 +22,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 		System.out.println("New connection established: " + session.getId());
 	}
 
-	@Override
+	@Override	
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		// Parse message JSON
 		String payload = message.getPayload();

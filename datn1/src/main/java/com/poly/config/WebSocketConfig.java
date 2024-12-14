@@ -9,9 +9,19 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new ChatWebSocketHandler(), "/chat").setAllowedOrigins("*");
+    private final CartWebSocketHandler cartWebSocketHandler;
 
-	}
+    // Tiêm CartWebSocketHandler vào trong constructor
+    public WebSocketConfig(CartWebSocketHandler cartWebSocketHandler) {
+        this.cartWebSocketHandler = cartWebSocketHandler;
+    }
+
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        // Đăng ký WebSocket handler cho phần chat
+        registry.addHandler(new ChatWebSocketHandler(), "/chat").setAllowedOrigins("*");
+
+        // Đăng ký WebSocket handler cho phần giỏ hàng
+        registry.addHandler(cartWebSocketHandler, "/cart").setAllowedOrigins("*");
+    }
 }

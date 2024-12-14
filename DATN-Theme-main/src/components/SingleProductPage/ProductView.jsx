@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import Star from "../Helpers/icons/Star";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie';
@@ -31,7 +30,118 @@ export default function ProductView() {
     }
   }
 
-  // Fetch product details
+  // WebSocket connection setup (for notifications)
+  useEffect(() => {
+    const socket = new WebSocket('ws://localhost:8080/cart'); // Thay đổi endpoint nếu cần
+
+    socket.onopen = () => {
+      console.log('Kết nối WebSocket thành công');
+    };
+
+    socket.onmessage = (event) => {
+      toast.info(event.data); // Hiển thị thông báo nhận được
+    };
+
+    socket.onerror = (error) => {
+      console.error('Lỗi WebSocket:', error);
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const addToCart = async () => {
+    const token = Cookies.get('token');
+
+    if (!selectedSize) {
+      toast.error('Vui lòng chọn kích cỡ.');
+      return;
+    }
+
+    if (quantity <= 0) {
+      toast.error('Số lượng không hợp lệ.');
+      return;
+    }
+
+    const selectedSizeInfo = availableSizes.find(size => size.name === selectedSize);
+    if (!selectedSizeInfo) {
+      toast.error('Kích cỡ không hợp lệ.');
+      return;
+    }
+
+    const cartItems = JSON.parse(Cookies.get('cart') || '[]');
+    const existingItem = cartItems.find(item => item.size.id === selectedSizeInfo.id);
+    const totalQuantity = existingItem ? existingItem.quantity + quantity : quantity;
+
+    if (totalQuantity > selectedSizeInfo.quantityInStock) {
+      toast.error(`Số lượng vượt quá tồn kho. Chỉ còn ${selectedSizeInfo.quantityInStock} sản phẩm.`);
+      return;
+    }
+
+    const cartItem = {
+      id: null,
+      accountId: null,
+      quantity: parseInt(quantity, 10),
+      size: {
+        id: selectedSizeInfo.id,
+        productId: selectedSizeInfo.productId,
+        name: selectedSize,
+        quantityInStock: selectedSizeInfo.quantityInStock || 0,
+        color: {
+          id: selectedSizeInfo.color?.id || null,
+          name: selectedSizeInfo.color?.name || "Unknown"
+        }
+      }
+    };
+
+    const updateCartCookie = (item) => {
+      const cartItems = JSON.parse(Cookies.get('cart') || '[]');
+      const existingItem = cartItems.find(existing => existing.size.id === item.size.id);
+
+      if (existingItem) {
+        existingItem.quantity += item.quantity;
+      } else {
+        cartItems.push(item);
+      }
+
+      Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
+      setCartItems(cartItems);
+    };
+
+    try {
+      let response;
+
+      if (!token) {
+        response = await axios.post('http://localhost:8080/api/guest/carts', cartItem);
+      } else {
+        const decodedToken = jwtDecode(token);
+        cartItem.accountId = decodedToken.accountId;
+        response = await axios.post('http://localhost:8080/api/guest/carts', cartItem);
+      }
+
+      //console.log('API Response:', response.data);
+
+      if (response.data && response.data.id) {
+        cartItem.id = response.data.id;
+        updateCartCookie(cartItem);
+        toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
+        setQuantity(1);
+
+        // Phát thông báo đến tất cả các client qua WebSocket
+        const socket = new WebSocket('ws://localhost:8080/your-websocket-endpoint'); // Thay đổi endpoint nếu cần
+        socket.onopen = () => {
+          socket.send('Giỏ hàng của bạn đã được cập nhật!');
+        };
+      } else {
+        toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
+      }
+    } catch (error) {
+      toast.error('Số lượng vượt quá số lượng tồn kho.');
+      console.error('Error adding product to cart:', error);
+    }
+  };
+
   useEffect(() => {
     if (!id) {
       console.error("Product ID is not provided");
@@ -120,91 +230,6 @@ export default function ProductView() {
     const newImage = productDetails.images.find(img => img.color === color);
     if (newImage) {
       setSrc(newImage.image);
-    }
-  };
-
-  const addToCart = async () => {
-    const token = Cookies.get('token');
-
-    if (!selectedSize) {
-      toast.error('Vui lòng chọn kích cỡ.');
-      return;
-    }
-
-    if (quantity <= 0) {
-      toast.error('Số lượng không hợp lệ.');
-      return;
-    }
-
-    const selectedSizeInfo = availableSizes.find(size => size.name === selectedSize);
-    if (!selectedSizeInfo) {
-      toast.error('Kích cỡ không hợp lệ.');
-      return;
-    }
-
-    const cartItems = JSON.parse(Cookies.get('cart') || '[]');
-    const existingItem = cartItems.find(item => item.size.id === selectedSizeInfo.id);
-    const totalQuantity = existingItem ? existingItem.quantity + quantity : quantity;
-
-    if (totalQuantity > selectedSizeInfo.quantityInStock) {
-      toast.error(`Số lượng vượt quá tồn kho. Chỉ còn ${selectedSizeInfo.quantityInStock} sản phẩm.`);
-      return;
-    }
-
-    const cartItem = {
-      id: null,
-      accountId: null,
-      quantity: parseInt(quantity, 10),
-      size: {
-        id: selectedSizeInfo.id,
-        productId: selectedSizeInfo.productId,
-        name: selectedSize,
-        quantityInStock: selectedSizeInfo.quantityInStock || 0,
-        color: {
-          id: selectedSizeInfo.color?.id || null,
-          name: selectedSizeInfo.color?.name || "Unknown"
-        }
-      }
-    };
-
-    const updateCartCookie = (item) => {
-      const cartItems = JSON.parse(Cookies.get('cart') || '[]');
-      const existingItem = cartItems.find(existing => existing.size.id === item.size.id);
-
-      if (existingItem) {
-        existingItem.quantity += item.quantity;
-      } else {
-        cartItems.push(item);
-      }
-
-      Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
-      setCartItems(cartItems);
-    };
-
-    try {
-      let response;
-
-      if (!token) {
-        response = await axios.post('http://localhost:8080/api/guest/carts', cartItem);
-      } else {
-        const decodedToken = jwtDecode(token);
-        cartItem.accountId = decodedToken.accountId;
-        response = await axios.post('http://localhost:8080/api/guest/carts', cartItem);
-      }
-
-      console.log('API Response:', response.data);
-
-      if (response.data && response.data.id) {
-        cartItem.id = response.data.id;
-        updateCartCookie(cartItem);
-        toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
-        setQuantity(1);
-      } else {
-        toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
-      }
-    } catch (error) {
-      toast.error('Số lượng vượt quá số lượng tồn kho.');
-      console.error('Error adding product to cart:', error);
     }
   };
 

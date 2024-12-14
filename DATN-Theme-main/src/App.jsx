@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import ChatApp from "./components/Chat/ChatApp";
 import Routers from "./Routers";  // Không bọc trong <Router> ở đây nữa
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,7 +28,6 @@ function App() {
   return (
     <>
       <Routers />
-      <ChatApp />
       <ToastContainer />
     </>
   );

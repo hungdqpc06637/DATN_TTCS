@@ -4,16 +4,11 @@ import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 import {
-  FaCogs,
-  FaTachometerAlt
+  FaCogs
 } from 'react-icons/fa';
 export default function Navbar({ className }) {
   const [categoryToggle, setToggle] = useState(false);
   const [elementsSize, setSize] = useState("0px");
-  // const getItems = document.querySelectorAll(`.categories-list li`).length;
-  // if (categoryToggle && getItems > 0) {
-  //   setSize(`${40 * getItems}px`);
-  // }
   const [categories, setCategories] = useState([]);  // Thêm trạng thái lưu danh mục sản phẩm
   const [user, setUser] = useState(null);  // Khởi tạo trạng thái người dùng
   const [error, setError] = useState(null); // Trạng thái lỗi nếu có
