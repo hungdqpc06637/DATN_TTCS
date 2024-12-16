@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import Routers from "./Routers";  // Không bọc trong <Router> ở đây nữa
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import ChatApp from "./components/Chat/ChatApp";
 
 function App() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function App() {
   return (
     <>
       <Routers />
+      <ChatApp/>
       <ToastContainer />
     </>
   );
