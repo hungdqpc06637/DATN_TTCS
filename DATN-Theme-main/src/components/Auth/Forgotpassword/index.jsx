@@ -55,14 +55,14 @@ export default function Forgotpassword() {
               QUÊN MẬT KHẨU
             </h1>
             <p className="text-gray-600 text-sm">
-              Nhập email hoặc số điện thoại của bạn để khôi phục mật khẩu.
+              Nhập email của bạn để khôi phục mật khẩu.
             </p>
           </div>
 
           {/* Form */}
           <div className="mb-6">
             <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-2">
-              Email / SĐT của bạn
+              Email 
             </label>
             <input
               id="email"
