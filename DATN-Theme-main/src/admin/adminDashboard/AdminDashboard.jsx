@@ -18,6 +18,7 @@ import 'react-tabs/style/react-tabs.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Pagination from "../component/Pagination";
+import TopSellingProducts from '../component/TopSellingProducts';
 
 // Đăng ký các thành phần
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, Title, Tooltip, Legend);
@@ -81,14 +82,14 @@ const StatisticsPage = () => {
     if (startDate && endDate) {
       const startTimestamp = parseDateToTimestamp(startDate);
       const endTimestamp = parseDateToTimestamp(endDate);
-  
+
       const filtered = tableData
         .filter((item) => {
           const itemTimestamp = item.orderDate; // Giả sử orderDate là timestamp
           return itemTimestamp >= startTimestamp && itemTimestamp <= endTimestamp;
         })
         .sort((a, b) => b.quantitySold - a.quantitySold); // Sắp xếp theo số lượng bán giảm dần
-  
+
       setFilteredDataProduct(filtered);
     } else {
       // Nếu không chọn ngày, hiển thị toàn bộ và sắp xếp theo số lượng bán
@@ -96,9 +97,9 @@ const StatisticsPage = () => {
       setFilteredDataProduct(sortedData);
     }
   };
-  
 
-  
+
+
   // Gọi filterDataByDate khi startDate hoặc endDate thay đổi
   useEffect(() => {
     filterDataByDate();
@@ -184,6 +185,8 @@ const StatisticsPage = () => {
           },
           withCredentials: true,
         });
+        console.log(orderDetailsResponse.data);
+
         setTableData(orderDetailsResponse.data);
         setFilteredDataProduct(orderDetailsResponse.data);
       } catch (error) {
@@ -289,7 +292,13 @@ const StatisticsPage = () => {
           <h2 className="text-xl font-semibold">Tổng số đơn hàng hoàn thành</h2>
           <p className="text-3xl font-bold text-red-600">{statistics.totalOrders}</p>
         </div>
+
+        <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center">
+          <TopSellingProducts products={tableData} />
+        </div>
       </div>
+
+
 
       <Tabs>
         <TabList className="mt-10 grid grid-cols-3 md:grid-cols-3 gap-6">
