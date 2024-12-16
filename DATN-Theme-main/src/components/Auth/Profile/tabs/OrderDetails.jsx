@@ -143,13 +143,15 @@ const OrderDetails = ({
             </div>
           )}
 
-          {selectedOrder.payment && selectedOrder.payment.id === "2" && (
+          {Number(selectedOrder.status) !== 4 && selectedOrder.payment && selectedOrder.payment.id === "2" && (
             <div className="bg-yellow-100 text-yellow-700 p-2 rounded-lg text-center mb-4">
               <span>
                 Bạn cần thanh toán {calculateTotalPrice(selectedOrder.orderDetails, selectedOrder.shippingMethod).toLocaleString("vi-VN", { style: "currency", currency: "VND" })} khi nhận hàng.
               </span>
             </div>
           )}
+
+
 
           {/* Các nút hành động */}
           <div className="flex justify-end mt-6 space-x-4">

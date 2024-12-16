@@ -261,14 +261,14 @@ export default function AddressesTab() {
   return (
     <>
       <ToastContainer autoClose={1000} />
-      <div className="grid grid-cols-2 gap-[30px]">
-        <div className="w-full bg-primarygray p-5 border">
-          <div className="flex justify-between items-center">
-            <p className="title text-[22px] font-semibold">Danh sách địa chỉ</p>
+      <div className="grid grid-cols-2 gap-8">
+        <div className="w-full bg-primarygray p-6 border rounded-lg shadow-md">
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-xl font-semibold">Danh sách địa chỉ</p>
             <button
               type="button"
               onClick={() => setShowNewAddressForm((prev) => !prev)}
-              className="border border-qgray w-[34px] h-[34px] rounded-full flex justify-center items-center"
+              className="border border-qgray w-9 h-9 rounded-full flex justify-center items-center hover:bg-gray-200 transition duration-300"
             >
               <svg
                 width="17"
@@ -285,35 +285,35 @@ export default function AddressesTab() {
                 />
               </svg>
             </button>
-
           </div>
           {loading ? (
-            <p>Loading...</p>
+            <p className="text-center text-gray-500">Đang tải...</p>
           ) : (
             <>
               {error ? (
-                <p className="text-red-600">{error}</p>
+                <p className="text-center text-red-600">{error}</p>
               ) : (
                 <div>
                   {addressData.map((address) => (
-                    <div key={address.id} className="relative my-3 p-4 border rounded shadow-sm bg-white">
-
+                    <div
+                      key={address.id}
+                      className="relative my-4 p-5 border rounded-lg shadow-lg bg-white"
+                    >
                       <button
                         type="button"
                         onClick={() => handleEditAddress(address.id)}
-                        className="absolute top-2 right-2 border border-yellow-500 text-yellow-500 px-2 py-1 rounded text-sm hover:bg-yellow-50 transition-colors"
+                        className="absolute top-3 right-3 border border-yellow-500 text-yellow-500 px-3 py-1 rounded-md text-sm hover:bg-yellow-50 transition-colors"
                       >
                         Chỉnh sửa
                       </button>
 
-
                       <div className="mb-4">
-                        <p className="font-semibold">{address.fullname}</p>
+                        <p className="font-semibold text-lg">{address.fullname}</p>
                         <p className="text-gray-700">{address.phone}</p>
-                        <p className="text-gray-700">{address.province}, {address.district}, {address.ward}</p>
+                        <p className="text-gray-700">{`${address.province}, ${address.district}, ${address.ward}`}</p>
                         <p className="text-gray-500">{address.note}</p>
                       </div>
-                      <div className="flex items-center mt-2">
+                      <div className="flex items-center mt-3">
                         <input
                           type="checkbox"
                           checked={address.isdefault}
@@ -325,46 +325,46 @@ export default function AddressesTab() {
                           onClick={() => handleSetDefaultAddress(address.id)}
                         >
                           <span
-                            className={`block w-10 h-5 rounded-full transition-colors duration-300 ${address.isdefault ? 'bg-blue-500' : 'bg-gray-300'}`}
+                            className={`block w-12 h-6 rounded-full transition-colors duration-300 ${address.isdefault ? 'bg-blue-500' : 'bg-gray-300'
+                              }`}
                           ></span>
                           <span
-                            className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 transform ${address.isdefault ? 'translate-x-5' : 'translate-x-0'}`}
+                            className={`absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 transform ${address.isdefault ? 'translate-x-6' : 'translate-x-0'
+                              }`}
                           ></span>
                           <span className="text-gray-600 ml-3">Đặt làm địa chỉ mặc định</span>
                         </label>
                       </div>
 
-
                       {/* Nút Xóa */}
                       <div className="mt-4 flex justify-end">
                         <button
                           type="button"
-                          className="bg-red-500 text-white px-3 py-1 rounded"
-                          onClick={() => handleDeleteAddress(address.id)} // Gọi hàm xóa địa chỉ khi nhấn nút
+                          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
+                          onClick={() => handleDeleteAddress(address.id)}
                         >
                           Xóa
                         </button>
                       </div>
                     </div>
                   ))}
-
                 </div>
               )}
             </>
           )}
-
         </div>
+
         {showNewAddressForm && (
-          <div className="w-full mb-3">
-            <h3 className="text-lg font-semibold">Thêm/Chỉnh sửa địa chỉ</h3>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="w-full mb-6 p-6 bg-white rounded-lg shadow-md">
+            <h3 className="text-2xl font-semibold mb-4">Thêm/Chỉnh sửa địa chỉ</h3>
+            <div className="grid grid-cols-2 gap-6">
               <input
                 type="text"
                 name="fullname"
                 value={newAddress.fullname}
                 onChange={handleInputChange}
                 placeholder="Họ và tên"
-                className="p-2 border border-gray-300 rounded"
+                className="p-3 border border-gray-300 rounded-md"
                 required
               />
               <input
@@ -373,7 +373,7 @@ export default function AddressesTab() {
                 value={newAddress.phone}
                 onChange={handleInputChange}
                 placeholder="Số điện thoại"
-                className="p-2 border border-gray-300 rounded"
+                className="p-3 border border-gray-300 rounded-md"
                 required
               />
               <input
@@ -382,7 +382,7 @@ export default function AddressesTab() {
                 value={newAddress.province}
                 onChange={handleInputChange}
                 placeholder="Tỉnh/Thành phố"
-                className="p-2 border border-gray-300 rounded"
+                className="p-3 border border-gray-300 rounded-md"
                 required
               />
               <input
@@ -391,7 +391,7 @@ export default function AddressesTab() {
                 value={newAddress.district}
                 onChange={handleInputChange}
                 placeholder="Quận/Huyện"
-                className="p-2 border border-gray-300 rounded"
+                className="p-3 border border-gray-300 rounded-md"
                 required
               />
               <input
@@ -400,7 +400,7 @@ export default function AddressesTab() {
                 value={newAddress.ward}
                 onChange={handleInputChange}
                 placeholder="Phường/Xã"
-                className="p-2 border border-gray-300 rounded"
+                className="p-3 border border-gray-300 rounded-md"
                 required
               />
               <textarea
@@ -408,7 +408,7 @@ export default function AddressesTab() {
                 value={newAddress.note}
                 onChange={handleInputChange}
                 placeholder="Ghi chú"
-                className="p-2 border border-gray-300 rounded col-span-2"
+                className="p-3 border border-gray-300 rounded-md col-span-2"
               />
               <div className="col-span-2">
                 <label className="flex items-center">
@@ -423,16 +423,16 @@ export default function AddressesTab() {
                 </label>
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-6">
               <button
                 onClick={newAddress.id ? handleUpdateAddress : handleAddAddress}
-                className="bg-blue-500 text-white py-2 px-4 rounded"
+                className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 transition duration-300"
               >
                 {newAddress.id ? "Cập nhật" : "Thêm"}
               </button>
               <button
-                onClick={resetNewAddress} // Reset form khi nhấn nút Hủy
-                className="bg-red-500 text-white py-2 px-4 rounded ml-2"
+                onClick={resetNewAddress}
+                className="bg-red-500 text-white py-2 px-6 rounded-md ml-4 hover:bg-red-600 transition duration-300"
               >
                 Hủy
               </button>
@@ -440,6 +440,7 @@ export default function AddressesTab() {
           </div>
         )}
       </div>
+
     </>
   );
 }
