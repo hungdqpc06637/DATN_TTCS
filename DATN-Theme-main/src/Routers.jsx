@@ -81,8 +81,8 @@ export default function Routers() {
         setIsAdmin(roles.includes("ADMIN"));
         setIsStaff(roles.includes("STAFF"));
 
-        console.log("Decoded Token:", decodedToken);
-        console.log("Roles:", roles);
+        // console.log("Decoded Token:", decodedToken);
+        // console.log("Roles:", roles);
       } catch (error) {
         console.error("Token decoding error:", error);
       }

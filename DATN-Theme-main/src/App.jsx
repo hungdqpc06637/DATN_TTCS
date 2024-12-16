@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import Routers from "./Routers";  // Không bọc trong <Router> ở đây nữa
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { CartProvider } from "./components/Context/CartContext";
 import ChatApp from "./components/Chat/ChatApp";
 
 function App() {
@@ -26,12 +27,17 @@ function App() {
     };
   }, [location.pathname]);
 
+
+  // Kiểm tra nếu đường dẫn bắt đầu bằng "/admin", không hiển thị ChatApp
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
-    <>
+    <CartProvider> {/* Bọc ứng dụng trong CartProvider */}
+      {/* Chỉ hiển thị ChatApp nếu không phải trang admin */}
+      {!isAdminPage && <ChatApp />}
       <Routers />
-      <ChatApp/>
       <ToastContainer />
-    </>
+    </CartProvider>
   );
 }
 

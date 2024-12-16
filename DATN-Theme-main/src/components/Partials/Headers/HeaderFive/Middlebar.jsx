@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import ThinBag from "../../../Helpers/icons/ThinBag";
 import ThinLove from "../../../Helpers/icons/ThinLove";
@@ -6,42 +6,13 @@ import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from 'jwt-decode';
-import { toast } from 'react-toastify';
+import CartContext from "../../../Context/CartContext";
 
 export default function Middlebar({ className }) {
   const navigate = useNavigate();
 
 
-  // Sử dụng state để theo dõi giỏ hàng
-  const [cartCount, setCartCount] = useState(0);
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/cart");
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.message.includes('Số lượng sản phẩm')) {
-          // Cập nhật giao diện với số lượng sản phẩm mới
-          setCartCount(data.message.split(':')[1]);
-      }
-  };
-    
-
-
-
-    // Lấy giỏ hàng từ cookies khi load trang
-    const savedCart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
-    setCart(savedCart);
-
-    // Đảm bảo số lượng là kiểu số khi tính tổng
-    const totalQuantity = savedCart.reduce((acc, item) => acc + (Number(item.quantity) || 0), 0);
-    setCartCount(totalQuantity);
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-
+  const { cartCount } = useContext(CartContext);
 
   // Lấy thông tin người dùng từ cookie
   const token = Cookies.get("token");
@@ -63,12 +34,6 @@ export default function Middlebar({ className }) {
     navigate("/login");
     window.location.reload();
   };
-
-  // // Lấy số lượng sản phẩm trong giỏ hàng từ cookie
-  // const cart = Cookies.get('cart') ? JSON.parse(Cookies.get('cart')) : [];
-  // const cartCount = cart.length;
-
-
 
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>

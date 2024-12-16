@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
@@ -6,9 +6,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
 import { FaCartPlus, FaHeart } from 'react-icons/fa';
+import CartContext from "../Context/CartContext";
 
 export default function ProductView() {
-  const [cartItems, setCartItems] = useState(JSON.parse(Cookies.get('cart') || '[]'));
+  const { cartItems, setCartItems, cartCount, setCartCount } = useContext(CartContext); // Lấy cartItems và setCartCount từ CartContext
   const { id } = useParams();
   const [productDetails, setProductDetails] = useState(null);
   const [src, setSrc] = useState("");
@@ -30,27 +31,6 @@ export default function ProductView() {
     }
   }
 
-  // WebSocket connection setup (for notifications)
-  useEffect(() => {
-    const socket = new WebSocket('ws://localhost:8080/cart'); // Thay đổi endpoint nếu cần
-
-    socket.onopen = () => {
-      console.log('Kết nối WebSocket thành công');
-    };
-
-    socket.onmessage = (event) => {
-      toast.info(event.data); // Hiển thị thông báo nhận được
-    };
-
-    socket.onerror = (error) => {
-      console.error('Lỗi WebSocket:', error);
-    };
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-
   const addToCart = async () => {
     const token = Cookies.get('token');
 
@@ -70,7 +50,6 @@ export default function ProductView() {
       return;
     }
 
-    const cartItems = JSON.parse(Cookies.get('cart') || '[]');
     const existingItem = cartItems.find(item => item.size.id === selectedSizeInfo.id);
     const totalQuantity = existingItem ? existingItem.quantity + quantity : quantity;
 
@@ -95,19 +74,24 @@ export default function ProductView() {
       }
     };
 
-    const updateCartCookie = (item) => {
-      const cartItems = JSON.parse(Cookies.get('cart') || '[]');
-      const existingItem = cartItems.find(existing => existing.size.id === item.size.id);
+    // Log giá trị cartItems trước khi thêm
+    console.log("cartItems trước khi thêm vào giỏ hàng:", cartItems);
 
-      if (existingItem) {
-        existingItem.quantity += item.quantity;
-      } else {
-        cartItems.push(item);
-      }
+    const updatedCartItems = [...cartItems];
+    const existingItemIndex = updatedCartItems.findIndex(item => item.size.id === cartItem.size.id);
 
-      Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
-      setCartItems(cartItems);
-    };
+    if (existingItemIndex !== -1) {
+      updatedCartItems[existingItemIndex].quantity += cartItem.quantity;
+    } else {
+      updatedCartItems.push(cartItem);
+    }
+
+    // Cập nhật giỏ hàng trong state và lưu vào cookie ngay lập tức
+    setCartItems(updatedCartItems);
+    Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
+
+    // Kiểm tra và log cartItems sau khi thay đổi
+    console.log("Giỏ hàng sau khi cập nhật:", updatedCartItems);
 
     try {
       let response;
@@ -120,27 +104,25 @@ export default function ProductView() {
         response = await axios.post('http://localhost:8080/api/guest/carts', cartItem);
       }
 
-      //console.log('API Response:', response.data);
-
       if (response.data && response.data.id) {
         cartItem.id = response.data.id;
-        updateCartCookie(cartItem);
         toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
-        setQuantity(1);
-
-        // Phát thông báo đến tất cả các client qua WebSocket
-        const socket = new WebSocket('ws://localhost:8080/your-websocket-endpoint'); // Thay đổi endpoint nếu cần
-        socket.onopen = () => {
-          socket.send('Giỏ hàng của bạn đã được cập nhật!');
-        };
+        setQuantity(1);  // Reset lại số lượng
       } else {
         toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
       }
     } catch (error) {
-      toast.error('Số lượng vượt quá số lượng tồn kho.');
+      toast.error('Có lỗi khi thêm sản phẩm vào giỏ hàng.');
       console.error('Error adding product to cart:', error);
     }
   };
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
+    }
+  }, [cartItems]); // Chạy lại khi cartItems thay đổi
+
+
 
   useEffect(() => {
     if (!id) {

@@ -5,13 +5,11 @@ import { jwtDecode } from 'jwt-decode'; // Sửa lại jwtDecode
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import data from "../../data/products.json";
-import BreadcrumbCom from "../BreadcrumbCom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
 import LayoutHomeFive from "../Partials/LayoutHomeFive";
 import ProductView from "./ProductView";
 import Reviews from "./Reviews";
-import SallerInfo from "./SallerInfo";
 import { useParams } from 'react-router-dom';
 
 export default function SingleProductPage() {
@@ -38,8 +36,6 @@ export default function SingleProductPage() {
       console.error("Token decoding error:", error);
     }
   }
-
-  // Update state 'id' khi 'productId' thay đổi
   useEffect(() => {
     setId(productId);
   }, [productId]);
@@ -58,7 +54,7 @@ export default function SingleProductPage() {
           }
         });
 
-        console.log("Dữ liệu đánh giá từ API:", response.data);
+        //console.log("Dữ liệu đánh giá từ API:", response.data);
 
         // Kiểm tra xem dữ liệu trả về có phải là mảng không
         if (Array.isArray(response.data)) {
@@ -79,18 +75,14 @@ export default function SingleProductPage() {
   }, [id, token]); // Theo dõi id và token khi thay đổi
 
 
-
-
   // Sử dụng useParams để lấy productId từ URL
   const { id: idFromURL } = useParams();
-
   useEffect(() => {
     const newId = parseInt(idFromURL, 10);
     if (newId !== id) {
       setId(newId);
     }
   }, [idFromURL]); // Bỏ id ra khỏi dependency array để tránh render không cần thiết
-
 
   return (
     <>
@@ -103,7 +95,6 @@ export default function SingleProductPage() {
               </div>
             </div>
           </div>
-
           <div
             className="product-des-wrapper w-full relative pb-[60px]"
             ref={reviewElement}
@@ -185,7 +176,6 @@ export default function SingleProductPage() {
 
                 {tab === "review" && (
                   <div data-aos="fade-up" className="w-full tab-content-item">
-                    {/* review-comments */}
                     <div className="w-full">
                       <Reviews
                         reviewLoading={reviewLoading}

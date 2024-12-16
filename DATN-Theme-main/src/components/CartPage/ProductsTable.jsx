@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CartContext from "../Context/CartContext";
 
 export default function ProductsTable({ onSelectedTotalChange, accountId }) {
-  const [cartItems, setCartItems] = useState([]);
+  const {cartItems, setCartItems} =useContext(CartContext);
   const [products, setProducts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // State for error handling
@@ -34,6 +35,36 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
       }
     }
   }, []);
+
+
+  const handleRemoveItem = async (id) => {
+    const updatedCartItems = cartItems.filter(item => item.id !== id);
+    setCartItems(updatedCartItems);
+    Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
+
+    // Lấy thông tin người dùng từ cookie
+    const userInfo = JSON.parse(Cookies.get('user') || '{}');
+    const accountId = userInfo?.accountId;
+
+    if (accountId) {
+      try {
+        const response = await axios.delete(`http://localhost:8080/api/guest/carts/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        if (response.status === 204) {
+          setCartItems(updatedCartItems);
+          Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
+        }
+        else {
+          console.error("Lỗi khi xóa sản phẩm:", response.status);
+        }
+      } catch (error) {
+        console.error("Lỗi khi xóa mục khỏi cơ sở dữ liệu:", error.response?.data || error.message);
+      }
+    } else {
+    }
+  };
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -157,53 +188,6 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
       }
     }
   };
-
-
-  const handleRemoveItem = async (id) => {
-    //console.log("ID sản phẩm cần xóa:", id);
-    // Cập nhật giỏ hàng trong trạng thái local
-    const updatedCartItems = cartItems.filter(item => item.id !== id);
-    //console.log(updatedCartItems)
-    setCartItems(updatedCartItems); // Cập nhật trạng thái giỏ hàng
-    Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 }); // Lưu giỏ hàng vào cookie
-
-    // Lấy thông tin người dùng từ cookie
-    const userInfo = JSON.parse(Cookies.get('user') || '{}'); // Sử dụng '{}' nếu cookie không tồn tại
-    const accountId = userInfo?.accountId; // Lấy accountId từ userInfo
-    //console.log("accountId:", accountId);
-
-    // Nếu người dùng đã đăng nhập
-    if (accountId) {
-      try {
-        // Gọi API xóa sản phẩm
-        const response = await axios.delete(`http://localhost:8080/api/guest/carts/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true, // Đảm bảo rằng cookie được gửi
-        });
-
-        // Kiểm tra trạng thái phản hồi
-        if (response.status === 204) {
-          // Chỉ cập nhật khi xóa thành công
-          setCartItems(updatedCartItems);
-          Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
-          //console.log("Xóa sản phẩm thành công và đã cập nhật giỏ hàng.");
-        }
-        else {
-          console.error("Lỗi khi xóa sản phẩm:", response.status);
-        }
-      } catch (error) {
-        // Log chi tiết lỗi
-        console.error("Lỗi khi xóa mục khỏi cơ sở dữ liệu:", error.response?.data || error.message);
-      }
-    } else {
-      //console.log("Người dùng chưa đăng nhập, không thể xóa sản phẩm.");
-    }
-  };
-
-
-
-
-
   // Tính tổng giá cho các mục đã chọn
   useEffect(() => {
     const total = cartItems.reduce((sum, item) => {
