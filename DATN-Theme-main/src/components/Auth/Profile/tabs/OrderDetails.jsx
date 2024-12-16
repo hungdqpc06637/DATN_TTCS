@@ -6,6 +6,8 @@ const OrderDetails = ({
   handlePaymentAgain,
   updateOrderStatus,
   isReviewModalOpen,
+  handleOpenReviewModal,
+  handleCloseReviewModal,
   handleCloseDetailModal,
   setSelectedOrder,
   handleSubmit,
@@ -137,7 +139,7 @@ const OrderDetails = ({
           </div>
 
           {/* Thông báo trạng thái */}
-          {["0", "1", "2", "3", "4"].includes(selectedOrder.status) && selectedOrder.payment.id === "1" && (
+          {Number(selectedOrder.status) !== 4 && ["0", "1", "2", "3", "4"].includes(selectedOrder.status) && selectedOrder.payment.id === "1" && (
             <div className="bg-green-100 text-green-700 p-2 rounded-lg text-center mb-4">
               <span>Đã thanh toán</span>
             </div>
@@ -172,9 +174,17 @@ const OrderDetails = ({
                 </button>
               </div>
             )}
+
+            {selectedOrder?.status === "4" && (
+              <button
+                onClick={() => handleOpenReviewModal(selectedOrder)} // Truyền selectedOrder vào hàm
+                className="bg-blue-500 text-white px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out hover:bg-blue-600 hover:shadow-lg transform hover:scale-105 border border-blue-500 hover:border-blue-600">
+                Đánh giá sản phẩm
+              </button>
+            )}
+
           </div>
 
-          {/* Form đánh giá */}
           {isReviewModalOpen && selectedOrder && selectedOrder.status === "4" && (
             <div className="space-y-4 mt-6">
               <h3 className="font-semibold text-xl text-center">Đánh giá sản phẩm</h3>
@@ -198,12 +208,15 @@ const OrderDetails = ({
                 />
               </div>
               <div className="flex justify-center mt-4">
-                <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-full">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-blue-500 text-white px-6 py-2 rounded-full">
                   Gửi đánh giá
                 </button>
               </div>
             </div>
           )}
+
         </div>
       </div>
     )

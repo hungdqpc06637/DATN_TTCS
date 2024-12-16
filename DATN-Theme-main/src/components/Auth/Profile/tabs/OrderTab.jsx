@@ -17,8 +17,8 @@ export default function OrderTab({ accountId: initialAccountId }) {
   const [sizeId, setSizeId] = useState("");
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [ratingStatus, setRatingStatus] = useState(""); // state để lưu trạng thái đánh giá
-  const [hasRated, setHasRated] = useState(false);
+  const [hasRated, setHasRated] = useState(false);  // Kiểm tra xem người dùng đã đánh giá chưa
+  const [ratingStatus, setRatingStatus] = useState("Bạn đã đánh giá sản phẩm này rồi!");
   const token = Cookies.get("token");
 
   // Hàm kiểm tra người dùng đã đánh giá chưa
@@ -46,15 +46,18 @@ export default function OrderTab({ accountId: initialAccountId }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const orderDetails = selectedOrder?.orderDetails?.[0]; // Lấy phần tử đầu tiên từ orderDetails nếu có
-    const reviewData = {
-      orderId: selectedOrder.id, // Dùng selectedOrder.id
-      sizeId: orderDetails ? orderDetails.size.id : sizeId, // Nếu orderDetails có thì lấy size.id, nếu không dùng sizeId từ state
-      stars: stars,
-      review: review,
-    };
-    createRating(reviewData);
+    const orderDetails = selectedOrder?.orderDetails; // Lấy tất cả orderDetails của đơn hàng
+    orderDetails.forEach((detail) => {
+      const reviewData = {
+        orderId: selectedOrder.id, // Dùng selectedOrder.id
+        sizeId: detail.size.id, // Dùng size.id từ từng orderDetails
+        stars: stars,
+        review: review,
+      };
+      createRating(reviewData); // Gọi hàm tạo đánh giá
+    });
   };
+
   // Mở modal chi tiết đơn hàng
   const handleOpenDetailModal = (order) => {
     setSelectedOrder(order);
@@ -70,7 +73,6 @@ export default function OrderTab({ accountId: initialAccountId }) {
     setSelectedOrder(null);
   };
 
-  // Mở modal đánh giá
   const handleOpenReviewModal = (order) => {
     if (hasRated) {
       alert(ratingStatus); // Nếu đã đánh giá thì không mở modal
@@ -80,7 +82,6 @@ export default function OrderTab({ accountId: initialAccountId }) {
     }
   };
 
-  // Đóng modal đánh giá
   const handleCloseReviewModal = () => {
     setIsReviewModalOpen(false);
   };
@@ -254,8 +255,6 @@ export default function OrderTab({ accountId: initialAccountId }) {
           handlePaymentAgain={handlePaymentAgain}
           updateOrderStatus={updateOrderStatus}
           orders={orders}
-          handleOpenReviewModal={handleOpenReviewModal}
-          isReviewModalOpen={isReviewModalOpen}
           handleSubmit={handleSubmit}
           review={review}
           setReview={setReview}
@@ -265,9 +264,12 @@ export default function OrderTab({ accountId: initialAccountId }) {
           setSizeId={setSizeId}
           hasRated={hasRated}
           setSelectedOrder={setSelectedOrder}
+          isReviewModalOpen={isReviewModalOpen}
+          handleOpenReviewModal={handleOpenReviewModal}
+          handleCloseReviewModal={handleCloseReviewModal}
         />
       )}
     </>
   );
-  
+
 }
