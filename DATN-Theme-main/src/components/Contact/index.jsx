@@ -3,6 +3,7 @@ import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import LayoutHomeFive from "../Partials/LayoutHomeFive";
 import { ToastContainer, toast } from 'react-toastify';
+import React, { useEffect } from 'react';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,52 @@ export default function Contact() {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Thêm hiệu ứng fadeIn khi component được load
+   useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const pageTitleWrapperStyle = {
+    position: "relative",
+    textAlign: "center",
+    background: "linear-gradient(135deg, #81d4fa, #2196f3)",
+    padding: "40px 20px",
+    borderRadius: "15px",
+    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+    overflow: "hidden",
+    animation: "fadeInBackground 1.5s ease-in-out",
+  };
+
+  const pageTitleStyle = {
+    color: "Black",
+    fontFamily: "'Roboto', sans-serif",
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? "translateY(0)" : "translateY(20px)",
+    transition: "opacity 1s, transform 1s",
+  };
+
+  const breadcrumbStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "10px",
+    fontSize: "0.875rem", // Giảm kích thước font của breadcrumb
+    gap: "8px",
+    color: "rgba(255, 255, 255, 0.8)",
+  };
+  
+
+  const breadcrumbLinkStyle = {
+    color: "White",
+    textDecoration: "none",
+    transition: "color 0.3s ease",
+  };
+
+  const breadcrumbLinkHoverStyle = {
+    color: "#ffeb3b", // Vàng khi hover
+  };
 
 
   // Hàm xử lý thay đổi input
@@ -68,15 +115,41 @@ export default function Contact() {
   };
   return (
     <LayoutHomeFive childrenClasses="pt-0 pb-0">
-      <div className="page-title mb-10">
-        <PageTitle
-          title="Liên hệ"
-          breadcrumb={[
-            { name: "home", path: "/" },
-            { name: "Liên hệ", path: "/contact" },
-          ]}
-        />
+
+<div>
+  {/* Phần PageTitle */}
+  <div className="page-title mb-10" style={pageTitleWrapperStyle}>
+    <div style={pageTitleStyle}>
+      <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Liên Hệ</h1>
+      <div style={breadcrumbStyle}>
+        <a
+          href="/"
+          style={breadcrumbLinkStyle}
+          onMouseEnter={(e) => (e.target.style.color = "#000000")} // Đổi thành màu đen khi hover
+          onMouseLeave={(e) => (e.target.style.color = "white")} // Trở lại màu trắng khi rời chuột
+          onMouseDown={(e) => (e.target.style.color = "#444444")} // Đậm hơn khi nhấn chuột
+          onMouseUp={(e) => (e.target.style.color = "#000000")} // Quay lại đen khi nhả chuột
+        >
+          Home
+        </a>
+        <span>/</span>
+        <a
+          href="/contact"
+          style={breadcrumbLinkStyle}
+          onMouseEnter={(e) => (e.target.style.color = "#000000")} // Đổi thành màu đen khi hover
+          onMouseLeave={(e) => (e.target.style.color = "white")} // Trở lại màu trắng khi rời chuột
+          onMouseDown={(e) => (e.target.style.color = "#444444")} // Đậm hơn khi nhấn chuột
+          onMouseUp={(e) => (e.target.style.color = "#000000")} // Quay lại đen khi nhả chuột
+        >
+          Liên hệ
+        </a>
       </div>
+    </div>
+  </div>
+</div>
+
+
+
       <div className="contact-wrapper w-full mb-10">
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full lg:flex lg:space-x-[30px]">
