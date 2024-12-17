@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import InputCom from "../Helpers/InputCom";
@@ -8,12 +8,13 @@ import { jwtDecode } from 'jwt-decode';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import CartContext from "../Context/CartContext";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const [shippingMethods, setShippingMethods] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  const { cartItems, setCartItems, removeOrderedItems } = useContext(CartContext);
   const [products, setProducts] = useState({});
   const [addressData, setAddressData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -281,9 +282,6 @@ export default function CheckoutPage() {
         }
       }))
     };
-
-    // console.log("Order Data: ", orderData); // Log thông tin đơn hàng
-
     try {
       // Sử dụng endpoint của PaymentController
       const response = await fetch('http://localhost:8080/api/user/payments/create-payment-url', {
@@ -295,13 +293,7 @@ export default function CheckoutPage() {
         body: JSON.stringify(orderData),
         credentials: 'include', // Để gửi cookie
       });
-
       const data = await response.json();
-      //console.log("Payment Response: ", data);
-
-      // Kiểm tra nếu phương thức thanh toán là VNPAY
-      //console.log("Selected Payment Method: ", selectedPaymentMethod); // Log giá trị phương thức thanh toán
-
       if (selectedPaymentMethod == 1) {
         const vnpayUrl = data.vnpayUrl;
         console.log("VNPAY URL: ", vnpayUrl); // Log URL VNPAY
@@ -316,14 +308,12 @@ export default function CheckoutPage() {
           return; // Ngừng thực hiện nếu không có URL
         }
       }
-
       // Nếu không phải là phương thức VNPAY
       toast.success("Đặt hàng thành công!"); // Thông báo thành công
-
       // Reset lại trạng thái sau khi đặt hàng thành công
-      const orderCartItemIds = cartItems.map(item => item.id); // Lấy danh sách ID sản phẩm đã đặt hàng
-      setCartItems(prevCartItems => prevCartItems.filter(item => !orderCartItemIds.includes(item.id))); // Lọc ra sản phẩm đã đặt hàng
-
+      // Lấy ID sản phẩm đã đặt hàng và xóa khỏi giỏ hàng thông qua context
+      const orderedItemIds = cartItems.map((item) => item.id);
+      removeOrderedItems(orderedItemIds);
       // Reset các giá trị trạng thái
       setSelectedAddressId(null);
       setSelectedShippingMethod(null);
@@ -335,8 +325,6 @@ export default function CheckoutPage() {
       setTimeout(() => {
         navigate('/profile#order');
       }, 2000);
-
-      // navigate('/profile#order');
     } catch (error) {
       console.error("Error creating order: ", error); // Log lỗi
       if (error.response) {
@@ -356,11 +344,6 @@ export default function CheckoutPage() {
       }
     }
   };
-
-
-
-
-
 
   // Kiểm tra và cập nhật địa chỉ mặc định
   const handleSetDefaultAddress = async (addressId) => {
@@ -426,17 +409,12 @@ export default function CheckoutPage() {
     }
   }, [userInfo, token]);
 
-
-
-
   if (loading) {
     return <p>Đang tải thông tin...</p>;
   }
-
   return (
-
     <LayoutHomeFive childrenClasses="pt-0 pb-0">
-      <ToastContainer />
+      <ToastContainer autoClose={1000} />
       <div className="checkout-page-wrapper w-full bg-white pb-[60px]">
         <div className="w-full mb-5">
           <PageTitle
@@ -487,7 +465,6 @@ export default function CheckoutPage() {
                                     </div>
                                   )}
                                 </div>
-
                                 {/* Address Note (smaller for non-default) */}
                                 <div className={`text-[9px] text-gray-600 mt-2 ${address.isdefault ? 'text-sm' : 'text-[8px]'}`}>
                                   <p className="flex items-center">
@@ -495,7 +472,6 @@ export default function CheckoutPage() {
                                     {address.note}, {address.ward}, {address.district}, {address.province}
                                   </p>
                                 </div>
-
                                 {/* Set Default Address Button - Hide if address is default */}
                                 {!address.isdefault && (
                                   <div className="flex justify-between items-center mt-2">
@@ -518,9 +494,6 @@ export default function CheckoutPage() {
                           )}
                         </div>
                       </div>
-
-
-
                       <button
                         onClick={toggleNewAddressForm}
                         className="mt-6 bg-indigo-600 text-white py-2 px-4 text-sm font-medium shadow-md flex items-center justify-center hover:bg-indigo-700 transition-all duration-200 ease-in-out"
@@ -528,9 +501,6 @@ export default function CheckoutPage() {
                         <i className="fas fa-plus mr-2 text-lg"></i>
                         <span>Thêm địa chỉ mới</span>
                       </button>
-
-
-
                       {showNewAddressForm && (
                         <div
                           className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50"
@@ -597,7 +567,6 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                       )}
-
                     </div>
                   </div>
                 </div>
@@ -620,11 +589,8 @@ export default function CheckoutPage() {
                   </form>
                 </div>
               </div>
-
-
               <div className="flex-1">
                 <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-5">Tóm tắt đơn hàng</h1>
-
                 <div className="w-full px-10 py-[30px] border border-[#EDEDED] rounded-lg shadow-sm">
                   <div className="sub-total mb-6">
                     <div className="flex justify-between mb-5">
@@ -676,9 +642,7 @@ export default function CheckoutPage() {
                       </tr>
                     )}
                   </div>
-
                   <div className="w-full h-[1px] bg-[#EDEDED] mb-6"></div>
-
                   <div className="payment-method mb-5">
                     <h1 className="text-2xl text-qblack font-medium mb-3">Phương thức vận chuyển</h1>
                     <p className="text-[15px] text-qgray mb-2">Chọn phương thức vận chuyển</p>
@@ -736,8 +700,6 @@ export default function CheckoutPage() {
                     Đặt hàng
                   </button>
                 </div>
-
-
               </div>
             </div>
           </div>

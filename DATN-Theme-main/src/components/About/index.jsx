@@ -91,10 +91,10 @@ export default function About() {
       <ToastContainer autoClose={1000} />
       <div className="about-page-wrapper w-full">
 
-      <div className="title-area w-full h-48 flex flex-col items-center justify-center rounded-b-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #81d4fa, #2196f3)" }}>
-      {/* Keyframes CSS */}
-  <style>
-    {`
+        <div className="title-area w-full h-48 flex flex-col items-center justify-center rounded-b-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #81d4fa, #2196f3)" }}>
+          {/* Keyframes CSS */}
+          <style>
+            {`
       @keyframes fadeInUp {
         0% {
           opacity: 0;
@@ -106,38 +106,38 @@ export default function About() {
         }
       }
     `}
-  </style>
+          </style>
 
-  {/* Tiêu đề */}
-  <h1
-    className="text-4xl font-bold text-black mb-2"
-    style={{
-      animation: "fadeInUp 1.5s ease-in-out",
-      opacity: 1,
-      transform: "translateY(0)",
-    }}
-  >
-    Về Chúng Tôi
-  </h1>
+          {/* Tiêu đề */}
+          <h1
+            className="text-4xl font-bold text-black mb-2"
+            style={{
+              animation: "fadeInUp 1.5s ease-in-out",
+              opacity: 1,
+              transform: "translateY(0)",
+            }}
+          >
+            Về Chúng Tôi
+          </h1>
 
-  {/* Breadcrumb */}
-  <div
-    className="text-white text-sm"
-    style={{
-      animation: "fadeInUp 1.5s ease-in-out",
-      opacity: 1,
-      transform: "translateY(0)",
-    }}
-  >
-    <Link to="/" className="hover:text-yellow-300 transition-colors duration-300">
-      Home
-    </Link>
-    <span> / </span>
-    <Link to="/about" className="hover:text-yellow-300 transition-colors duration-300">
-      About Us
-    </Link>
-  </div>
-</div>
+          {/* Breadcrumb */}
+          <div
+            className="text-white text-sm"
+            style={{
+              animation: "fadeInUp 1.5s ease-in-out",
+              opacity: 1,
+              transform: "translateY(0)",
+            }}
+          >
+            <Link to="/" className="hover:text-yellow-300 transition-colors duration-300">
+              Home
+            </Link>
+            <span> / </span>
+            <Link to="/about" className="hover:text-yellow-300 transition-colors duration-300">
+              About Us
+            </Link>
+          </div>
+        </div>
 
 
 
@@ -488,32 +488,6 @@ export default function About() {
                     Sản phẩm chính hãng được đảm bảo
                   </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="blog-post-wrapper w-full mb-[30px]">
-          <div className="container-x mx-auto">
-            <div className="blog-post-title flex justify-center items-cente mb-[30px]">
-              <h1 className="text-3xl font-semibold text-qblack">
-                Tin tức mới nhất của tôi
-              </h1>
-            </div>
-
-            <div className="blogs-wrapper w-full">
-              <div className="grid md:grid-cols-2 grid-cols-1 lg:gap-[30px] gap-5">
-                <DataIteration datas={blog.blogs} startLength={0} endLength={2}>
-                  {({ datas }) => (
-                    <div
-                      data-aos="fade-up"
-                      key={datas.id}
-                      className="item w-full"
-                    >
-                      <BlogCard datas={datas} />
-                    </div>
-                  )}
-                </DataIteration>
               </div>
             </div>
           </div>

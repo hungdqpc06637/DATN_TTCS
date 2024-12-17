@@ -73,25 +73,17 @@ export default function ProductView() {
         }
       }
     };
-
-    // Log giá trị cartItems trước khi thêm
-    console.log("cartItems trước khi thêm vào giỏ hàng:", cartItems);
-
+    
     const updatedCartItems = [...cartItems];
     const existingItemIndex = updatedCartItems.findIndex(item => item.size.id === cartItem.size.id);
-
     if (existingItemIndex !== -1) {
       updatedCartItems[existingItemIndex].quantity += cartItem.quantity;
     } else {
       updatedCartItems.push(cartItem);
     }
-
     // Cập nhật giỏ hàng trong state và lưu vào cookie ngay lập tức
     setCartItems(updatedCartItems);
     Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
-
-    // Kiểm tra và log cartItems sau khi thay đổi
-    console.log("Giỏ hàng sau khi cập nhật:", updatedCartItems);
 
     try {
       let response;
