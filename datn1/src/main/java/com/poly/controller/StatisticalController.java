@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.dto.OrderStatisticsDTO;
+import com.poly.dto.StarVotesProjection;
 import com.poly.dto.StatisticalDTO;
+import com.poly.service.RatingService;
 import com.poly.service.StatisticalService;
 
 @RestController
@@ -21,6 +23,9 @@ public class StatisticalController {
 	@Autowired
 	private StatisticalService statisticalService;
 
+	@Autowired
+    private RatingService ratingService;
+	
 	@GetMapping("/count-order")
 	@PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
 	public ResponseEntity<Integer> countOrdersWithStatusOne() {
@@ -55,4 +60,10 @@ public class StatisticalController {
 
 		return statisticalService.getOrderStatistics();
 	}
+	
+	@GetMapping("/star-votes")
+	@PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    public List<StarVotesProjection> getStarVotes() {
+        return ratingService.getStarVotes();
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.poly.dto.StarVotesProjection;
 import com.poly.entity.Orders;
 import com.poly.entity.Rating;
 import com.poly.entity.Size;
@@ -25,4 +26,11 @@ public interface RatingRepository extends JpaRepository<Rating, Integer> {
 
 	// Tìm đánh giá của người dùng cho một sản phẩm trong đơn hàng
     Optional<Rating> findByOrdersAndSize(Orders order, Size size);
+    
+    @Query("SELECT r.stars AS stars, COUNT(r) AS votes " +
+            "FROM Rating r " +
+            "WHERE r.stars IS NOT NULL " +
+            "GROUP BY r.stars " +
+            "ORDER BY r.stars")
+     List<StarVotesProjection> findStarVoteCounts();
 }
