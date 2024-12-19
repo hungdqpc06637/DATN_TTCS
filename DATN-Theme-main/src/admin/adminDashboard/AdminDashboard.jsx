@@ -19,7 +19,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Pagination from "../component/Pagination";
 import TopSellingProducts from '../component/TopSellingProducts';
-
+import ProductReviewPieChart from '../component/ProductReviewPieChart';
 // Đăng ký các thành phần
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, Title, Tooltip, Legend);
 
@@ -295,6 +295,10 @@ const StatisticsPage = () => {
 
         <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center">
           <TopSellingProducts products={tableData} />
+        </div>
+
+        <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center">
+          <ProductReviewPieChart products={tableData} />
         </div>
       </div>
 

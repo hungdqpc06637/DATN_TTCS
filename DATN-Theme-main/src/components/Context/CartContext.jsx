@@ -6,7 +6,7 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const storedCart = Cookies.get('cart');
   const initialCart = storedCart ? JSON.parse(storedCart) : [];
-  
+
   const [cartItems, setCartItems] = useState(initialCart);
   const [cartCount, setCartCount] = useState(0);
 
@@ -18,12 +18,18 @@ export const CartProvider = ({ children }) => {
 
     // Cập nhật cookie sau khi cartItems thay đổi
     Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
-    
+
     console.log("Giỏ hàng đã cập nhật trong cookie:", cartItems);
   }, [cartItems]);  // Chạy lại khi cartItems thay đổi
 
+  // Hàm xóa sản phẩm đã đặt hàng
+  const removeOrderedItems = (orderedItemIds) => {
+    setCartItems((prevCartItems) =>
+      prevCartItems.filter((item) => !orderedItemIds.includes(item.id))
+    );
+  };
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, cartCount, setCartCount }}>
+    <CartContext.Provider value={{ cartItems, setCartItems, cartCount, setCartCount ,removeOrderedItems }}>
       {children}
     </CartContext.Provider>
   );
