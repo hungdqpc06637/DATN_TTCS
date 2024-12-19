@@ -3963,7 +3963,11 @@ shebang-regex@^3.0.0:
     react-table "^7.8.0"
     react-tabs "^6.0.2"
     react-toastify "^10.0.5"
+<<<<<<< HEAD
     shopo "file:C:/Users/Admin/AppData/Local/Yarn/Cache/v6/npm-shopo-0.0.0-773b3d01-ee62-44cb-aa8e-91e013283a64-1734360361660/node_modules/shopo"
+=======
+    shopo "file:C:/Users/TOAN/AppData/Local/Yarn/Cache/v6/npm-shopo-0.0.0-c24d8877-d143-4547-b0dc-54c324b28390-1734447210419/node_modules/shopo"
+>>>>>>> 0df85e192c2cd9bc3561dc6c1ff88e8470b093b5
     slick-carousel "^1.8.1"
     socket.io-client "^4.8.1"
     sockjs-client "^1.6.1"

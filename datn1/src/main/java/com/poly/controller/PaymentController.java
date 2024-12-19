@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.poly.config.AdminNotificationHandler;
 import com.poly.dto.OrderRequestDTO;
 import com.poly.entity.Orders;
 import com.poly.entity.Payment;
@@ -44,42 +45,49 @@ public class PaymentController {
 	private VNPayService vnPayService;
 	private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
+	@Autowired
+	private AdminNotificationHandler adminNotificationHandler;
+
 	// Endpoint để tạo URL thanh toán
-	@PostMapping("/create-payment-url")
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'USER')")
-	public ResponseEntity<Map<String, String>> createPaymentUrl(@RequestBody OrderRequestDTO orderRequestDTO) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		// Kiểm tra xác thực
-		if (authentication == null || !authentication.isAuthenticated()) {
-			logger.error("Authentication is null or not authenticated.");
-			Map<String, String> response = new HashMap<>();
-			response.put("message", "You are not authorized to perform this action.");
-			return ResponseEntity.ok(response);
-		}
+    @PostMapping("/create-payment-url")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'USER')")
+    public ResponseEntity<Map<String, String>> createPaymentUrl(@RequestBody OrderRequestDTO orderRequestDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Kiểm tra xác thực
+        if (authentication == null || !authentication.isAuthenticated()) {
+            logger.error("Authentication is null or not authenticated.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "You are not authorized to perform this action.");
+            return ResponseEntity.ok(response);
+        }
 
-		try {
-			Orders orders = ordersService.createOrder(orderRequestDTO);
-			if (orderRequestDTO.getPaymentId() == 1) {
-				// Gọi phương thức createPaymentUrl để tạo link thanh toán
-				String paymentUrl = paymentService.createPaymentUrl(orders, orderRequestDTO.getCartItems());
-				// Trả về link thanh toán dưới dạng JSON
-				Map<String, String> response = new HashMap<>();
-				response.put("vnpayUrl", paymentUrl);
-				return ResponseEntity.ok(response);
-			} else {
-				// Trả về phản hồi thành công
-				Map<String, String> response = new HashMap<>();
-				response.put("message", "Đơn hàng đã được xử lý thành công!");
-				return ResponseEntity.ok(response);
-			}
-		} catch (Exception e) {
-			// Xử lý khi có lỗi và trả về thông báo lỗi
-			Map<String, String> errorResponse = new HashMap<>();
-			errorResponse.put("error", e.getMessage());
-			return ResponseEntity.status(500).body(errorResponse);
-		}
-	}
-
+        try {
+            Orders orders = ordersService.createOrder(orderRequestDTO);
+            if (orderRequestDTO.getPaymentId() == 1) {
+                // Gọi phương thức createPaymentUrl để tạo link thanh toán
+                String paymentUrl = paymentService.createPaymentUrl(orders, orderRequestDTO.getCartItems());
+                // Gửi thông báo cho tất cả admin qua WebSocket
+                adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt với thanh toán VNPay! ID đơn hàng: " + orders.getId());
+                // Trả về link thanh toán dưới dạng JSON
+                Map<String, String> response = new HashMap<>();
+                response.put("vnpayUrl", paymentUrl);
+                return ResponseEntity.ok(response);
+            } else {
+                // Gửi thông báo cho tất cả admin khi paymentId không phải là 1
+                adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt. ID đơn hàng: " + orders.getId());
+                // Trả về phản hồi thành công
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Đơn hàng đã được xử lý thành công!");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            // Xử lý khi có lỗi và trả về thông báo lỗi
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
+    
 	@GetMapping("/vnpay/callback")
 	public ResponseEntity<Map<String, String>> paymentCallback(@RequestParam Map<String, String> allParams) {
 		Map<String, String> fields = new HashMap<>(allParams);
@@ -149,44 +157,42 @@ public class PaymentController {
 	@PostMapping("/payment-again")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'USER')")
 	public ResponseEntity<Map<String, String>> createPaymentAgain(Orders order,
-	        @RequestBody Map<String, String> payload) {
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    if (authentication == null || !authentication.isAuthenticated()) {
-	        logger.error("Authentication is null or not authenticated.");
-	        Map<String, String> response = new HashMap<>();
-	        response.put("message", "You are not authorized to perform this action.");
-	        return ResponseEntity.ok(response);
-	    }
-	    try {
-	        String orderIdStr = payload.get("orderId");
-	        Orders orders = ordersService.findById(Integer.valueOf(orderIdStr));
+			@RequestBody Map<String, String> payload) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated()) {
+			logger.error("Authentication is null or not authenticated.");
+			Map<String, String> response = new HashMap<>();
+			response.put("message", "You are not authorized to perform this action.");
+			return ResponseEntity.ok(response);
+		}
+		try {
+			String orderIdStr = payload.get("orderId");
+			Orders orders = ordersService.findById(Integer.valueOf(orderIdStr));
 
-	        BigDecimal totalAmount = orders.getOrderDetails().stream()
-	                .map(od -> od.getPrice().multiply(BigDecimal.valueOf(od.getQuantity())))
-	                .reduce(BigDecimal.ZERO, BigDecimal::add);
+			BigDecimal totalAmount = orders.getOrderDetails().stream()
+					.map(od -> od.getPrice().multiply(BigDecimal.valueOf(od.getQuantity())))
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
 
-	        BigDecimal shipmentFee = orders.getShipmentFee();
-	        BigDecimal totalAmountWithShipping = totalAmount.add(shipmentFee);
+			BigDecimal shipmentFee = orders.getShipmentFee();
+			BigDecimal totalAmountWithShipping = totalAmount.add(shipmentFee);
 
-	        int amountInVND = totalAmountWithShipping.multiply(BigDecimal.valueOf(100)).intValue();
+			int amountInVND = totalAmountWithShipping.multiply(BigDecimal.valueOf(100)).intValue();
 
+			logger.info("Total Amount: {}", totalAmount);
+			logger.info("Shipment Fee: {}", shipmentFee);
+			logger.info("Total Amount with Shipping: {}", totalAmountWithShipping);
+			logger.info("Amount in VND: {}", amountInVND);
 
-	        logger.info("Total Amount: {}", totalAmount);
-	        logger.info("Shipment Fee: {}", shipmentFee);
-	        logger.info("Total Amount with Shipping: {}", totalAmountWithShipping);
-	        logger.info("Amount in VND: {}", amountInVND);
-
-	        String paymentUrl = vnPayService.createOrder(orders.getId(), amountInVND, "Thanh toán đơn hàng");
-	        Map<String, String> response = new HashMap<>();
-	        response.put("vnpayUrl", paymentUrl);
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        Map<String, String> errorResponse = new HashMap<>();
-	        errorResponse.put("error", e.getMessage());
-	        return ResponseEntity.status(500).body(errorResponse);
-	    }
+			String paymentUrl = vnPayService.createOrder(orders.getId(), amountInVND, "Thanh toán đơn hàng");
+			Map<String, String> response = new HashMap<>();
+			response.put("vnpayUrl", paymentUrl);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			Map<String, String> errorResponse = new HashMap<>();
+			errorResponse.put("error", e.getMessage());
+			return ResponseEntity.status(500).body(errorResponse);
+		}
 	}
-
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Payment> getPaymentById(@PathVariable Integer id) {

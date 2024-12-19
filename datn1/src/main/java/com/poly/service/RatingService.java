@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poly.dto.RatingDTO;
+import com.poly.dto.StarVotesProjection;
 import com.poly.entity.OrderDetails;
 import com.poly.entity.Orders;
 import com.poly.entity.Rating;
@@ -106,6 +107,10 @@ public class RatingService {
     public boolean hasRatedProduct(Orders order, Size size) {
         Optional<Rating> rating = ratingRepository.findByOrdersAndSize(order, size);
         return rating.isPresent();
+    }
+    
+    public List<StarVotesProjection> getStarVotes() {
+        return ratingRepository.findStarVoteCounts();
     }
 
 }

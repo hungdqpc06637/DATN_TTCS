@@ -20,6 +20,9 @@ export default function ProductsTable({ className, accountId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentProductImage, setCurrentProductImage] = useState("");
+  const [currentPage, setCurrentPage] = useState(1); // Trạng thái trang hiện tại
+  const [productsPerPage, setProductsPerPage] = useState(6); // Số sản phẩm mỗi trang
+  const [totalPages, setTotalPages] = useState(0); // Tổng số trang
   let userInfo;
 
   if (token) {
@@ -34,11 +37,10 @@ export default function ProductsTable({ className, accountId }) {
     const fetchFavourites = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/user/favourites/account/${accountId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         setFavourites(response.data);
+        setTotalPages(Math.ceil(response.data.length / productsPerPage)); // Cập nhật tổng số trang
       } catch (err) {
         setError(err.response ? err.response.data : 'Có lỗi xảy ra khi lấy dữ liệu.');
         console.error('Lỗi khi lấy danh sách yêu thích:', err);
@@ -48,7 +50,7 @@ export default function ProductsTable({ className, accountId }) {
     };
 
     fetchFavourites();
-  }, [accountId, token]);
+  }, [accountId, token, productsPerPage]);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -59,7 +61,8 @@ export default function ProductsTable({ className, accountId }) {
 
       try {
         const productIds = Array.from(new Set(
-          favourites.map(item => item.sizeId.product.id)
+          favourites.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage)
+            .map(item => item.sizeId.product.id)
         ));
 
         const productRequests = productIds.map(id =>
@@ -85,7 +88,7 @@ export default function ProductsTable({ className, accountId }) {
     };
 
     fetchProductDetails();
-  }, [favourites, token]);
+  }, [favourites, currentPage, token]);
 
   const handleRemoveFavourite = async (id) => {
     try {
@@ -101,9 +104,15 @@ export default function ProductsTable({ className, accountId }) {
       toast.error("Không thể xóa sản phẩm yêu thích.");
     }
   };
+
   const formatPrice = (price) => {
     return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
 
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div>{error}</div>;
@@ -132,7 +141,7 @@ export default function ProductsTable({ className, accountId }) {
       <ToastContainer />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {favourites.length > 0 ? (
-          favourites.map((item) => {
+          favourites.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage).map((item) => {
             const product = products[item.sizeId.product.id] || {};
             const productPrice = parseFloat(product.price) || 0;
             return (
@@ -230,7 +239,30 @@ export default function ProductsTable({ className, accountId }) {
           />
         </div>
       </Modal>
-
+      {/* Phân trang */}
+      <div className="flex justify-center mt-4">
+        <button
+          className="px-4 py-2 bg-gray-300 rounded-l-lg"
+          onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+        >
+          Trước
+        </button>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            className={`px-4 py-2 ${index + 1 === currentPage ? 'bg-blue-600 text-white' : 'bg-white'}`}
+            onClick={() => handlePageChange(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+        <button
+          className="px-4 py-2 bg-gray-300 rounded-r-lg"
+          onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+        >
+          Sau
+        </button>
+      </div>
     </div>
   );
 }

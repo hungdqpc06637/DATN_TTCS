@@ -91,10 +91,10 @@ export default function About() {
       <ToastContainer autoClose={1000} />
       <div className="about-page-wrapper w-full">
 
-      <div className="title-area w-full h-48 flex flex-col items-center justify-center rounded-b-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #81d4fa, #2196f3)" }}>
-      {/* Keyframes CSS */}
-  <style>
-    {`
+        <div className="title-area w-full h-48 flex flex-col items-center justify-center rounded-b-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #81d4fa, #2196f3)" }}>
+          {/* Keyframes CSS */}
+          <style>
+            {`
       @keyframes fadeInUp {
         0% {
           opacity: 0;
@@ -106,38 +106,38 @@ export default function About() {
         }
       }
     `}
-  </style>
+          </style>
 
-  {/* Tiêu đề */}
-  <h1
-    className="text-4xl font-bold text-black mb-2"
-    style={{
-      animation: "fadeInUp 1.5s ease-in-out",
-      opacity: 1,
-      transform: "translateY(0)",
-    }}
-  >
-    Về Chúng Tôi
-  </h1>
+          {/* Tiêu đề */}
+          <h1
+            className="text-4xl font-bold text-black mb-2"
+            style={{
+              animation: "fadeInUp 1.5s ease-in-out",
+              opacity: 1,
+              transform: "translateY(0)",
+            }}
+          >
+            Về Chúng Tôi
+          </h1>
 
-  {/* Breadcrumb */}
-  <div
-    className="text-white text-sm"
-    style={{
-      animation: "fadeInUp 1.5s ease-in-out",
-      opacity: 1,
-      transform: "translateY(0)",
-    }}
-  >
-    <Link to="/" className="hover:text-yellow-300 transition-colors duration-300">
-      Home
-    </Link>
-    <span> / </span>
-    <Link to="/about" className="hover:text-yellow-300 transition-colors duration-300">
-      About Us
-    </Link>
-  </div>
-</div>
+          {/* Breadcrumb */}
+          <div
+            className="text-white text-sm"
+            style={{
+              animation: "fadeInUp 1.5s ease-in-out",
+              opacity: 1,
+              transform: "translateY(0)",
+            }}
+          >
+            <Link to="/" className="hover:text-yellow-300 transition-colors duration-300">
+              Home
+            </Link>
+            <span> / </span>
+            <Link to="/about" className="hover:text-yellow-300 transition-colors duration-300">
+              About Us
+            </Link>
+          </div>
+        </div>
 
 
 
@@ -199,56 +199,63 @@ export default function About() {
           <div className="title flex justify-center mb-8">
             <h1 className="text-[28px] font-semibold text-qblack">Phản hồi của khách hàng</h1>
           </div>
-
           <div className="feedback-slider-wrapper w-full relative overflow-hidden">
             <SimpleSlider selector={slider} settings={settings}>
-              {ratings.length > 0 ? (
-                ratings.map((rating) => (
-                  <div key={rating.id} className="item bg-primarygray p-6 rounded-lg shadow-md mb-6">
-                    <div className="flex flex-col justify-between h-full">
-                      {/* Rating section */}
-                      <div className="rating flex items-center space-x-2">
-                        <div className="flex">
-                          {[...Array(parseInt(rating.stars))].map((_, index) => (
-                            <Star key={index} w="20" h="20" />
-                          ))}
-                        </div>
-                        <span className="text-[13px] text-qblack">({rating.stars}.0)</span>
-                      </div>
+            {ratings.length > 0 ? (
+  ratings
+    .filter(
+      (value, index, self) => self.findIndex((r) => r.id === value.id) === index
+    ) // Lọc phần tử trùng lặp
+    .map((rating, index) => (
+      <div
+        key={`${rating.id}-${index}`} // Key đảm bảo là duy nhất
+        className="item bg-primarygray p-6 rounded-lg shadow-md mb-6"
+      >
+        <div className="flex flex-col justify-between h-full">
+          {/* Rating Section */}
+          <div className="rating flex items-center space-x-2">
+            <div className="flex">
+              {[...Array(parseInt(rating.stars))].map((_, idx) => (
+                <Star key={idx} w="20" h="20" />
+              ))}
+            </div>
+            <span className="text-[13px] text-qblack">({rating.stars}.0)</span>
+          </div>
 
-                      {/* Review content */}
-                      <div className="text-[15px] text-qgraytwo leading-6 mt-4 line-clamp-4">
-                        {rating.review || "Không có nội dung đánh giá."}
-                      </div>
+          {/* Review Content */}
+          <div className="text-[15px] text-qgraytwo leading-6 mt-4 line-clamp-4">
+            {rating.review || "Không có nội dung đánh giá."}
+          </div>
 
-                      {/* User info section */}
-                      <div className="flex items-center mt-6 space-x-4">
-                        <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
-                          <img
-                            src={
-                              rating.orders.account.image
-                                ? `/assets/images/${rating.orders.account.image}`
-                                : "/assets/images/comment-user-1.png"
-                            }
-                            alt={rating.orders.account.username || "Người dùng"}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <p className="text-[18px] text-qblack font-medium">
-                            {rating.orders.account.username || "Ẩn danh"}
-                          </p>
-                          <p className="text-qgraytwo text-[13px]">
-                            {rating.orders.account.location || "Địa điểm không xác định"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-qgraytwo">Không có đánh giá 5 sao nào.</p>
-              )}
+          {/* User Info */}
+          <div className="flex items-center mt-6 space-x-4">
+            <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
+              <img
+                src={
+                  rating.orders.account.image
+                    ? `/assets/images/${rating.orders.account.image}`
+                    : "/assets/images/comment-user-1.png"
+                }
+                alt={rating.orders.account.username || "Người dùng"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-[18px] text-qblack font-medium">
+                {rating.orders.account.username || "Ẩn danh"}
+              </p>
+              <p className="text-qgraytwo text-[13px]">
+                {rating.orders.account.location || "Địa điểm không xác định"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))
+) : (
+  <p className="text-center text-qgraytwo">Không có đánh giá 5 sao nào.</p>
+)}
+
             </SimpleSlider>
 
             {/* Navigation buttons for the slider */}
@@ -488,32 +495,6 @@ export default function About() {
                     Sản phẩm chính hãng được đảm bảo
                   </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="blog-post-wrapper w-full mb-[30px]">
-          <div className="container-x mx-auto">
-            <div className="blog-post-title flex justify-center items-cente mb-[30px]">
-              <h1 className="text-3xl font-semibold text-qblack">
-                Tin tức mới nhất của tôi
-              </h1>
-            </div>
-
-            <div className="blogs-wrapper w-full">
-              <div className="grid md:grid-cols-2 grid-cols-1 lg:gap-[30px] gap-5">
-                <DataIteration datas={blog.blogs} startLength={0} endLength={2}>
-                  {({ datas }) => (
-                    <div
-                      data-aos="fade-up"
-                      key={datas.id}
-                      className="item w-full"
-                    >
-                      <BlogCard datas={datas} />
-                    </div>
-                  )}
-                </DataIteration>
               </div>
             </div>
           </div>
