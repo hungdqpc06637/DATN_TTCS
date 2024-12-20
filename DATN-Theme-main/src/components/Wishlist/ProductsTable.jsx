@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import CSS cho toast
 import QuickViewIco from '../Helpers/icons/QuickViewIco';
 import Modal from 'react-modal';
+import CartContext from "../Context/CartContext";
 
 // Đặt root element cho modal (nếu cần thiết, tuỳ thuộc vào thư viện sử dụng)
 Modal.setAppElement('#root');
@@ -23,6 +24,7 @@ export default function ProductsTable({ className, accountId }) {
   const [currentPage, setCurrentPage] = useState(1); // Trạng thái trang hiện tại
   const [productsPerPage, setProductsPerPage] = useState(6); // Số sản phẩm mỗi trang
   const [totalPages, setTotalPages] = useState(0); // Tổng số trang
+  const { cartItems, setCartItems } = useContext(CartContext);
   let userInfo;
 
   if (token) {
@@ -32,6 +34,118 @@ export default function ProductsTable({ className, accountId }) {
       console.error("Lỗi giải mã token:", error);
     }
   }
+
+
+  const addToCart = async (favouriteItem) => {
+    const token = Cookies.get('token');
+    
+    let userInfo;
+    let accountId = null; // Mặc định là null cho khách hàng chưa đăng nhập
+    
+    if (token) {
+      try {
+        userInfo = jwtDecode(token);
+        accountId = userInfo.accountId || null; // Lấy accountId từ token nếu có
+      } catch (error) {
+        console.error("Lỗi giải mã token:", error);
+      }
+    }
+    
+    // Kiểm tra nếu số lượng không hợp lệ
+    if (+favouriteItem.quantity <= 0) { // Ép kiểu số bằng dấu "+"
+      toast.error('Số lượng không hợp lệ.');
+      return;
+    }
+    
+    // Lấy thông tin kích cỡ từ `favouriteItem`
+    const selectedSizeInfo = {
+      id: favouriteItem.sizeId.id,
+      name: favouriteItem.sizeId.name,
+      quantityInStock: +favouriteItem.sizeId.quantityInStock, // Ép kiểu số
+      color: favouriteItem.sizeId.color,
+    };
+    
+    if (!selectedSizeInfo) {
+      toast.error('Kích cỡ không hợp lệ.');
+      return;
+    }
+    
+    // Kiểm tra tồn tại của sản phẩm trong giỏ hàng
+    const existingItem = cartItems.find(item => item.size.id === selectedSizeInfo.id);
+    const totalQuantity = existingItem
+      ? +existingItem.quantity + +favouriteItem.quantity // Ép kiểu số
+      : +favouriteItem.quantity; // Ép kiểu số
+    
+    if (totalQuantity > selectedSizeInfo.quantityInStock) {
+      toast.error(`Hết hàng.`);
+      return;
+    }
+    
+    const cartItem = {
+      id: null, // Tạm thời chưa có id, đợi API trả về
+      accountId: accountId, // Dùng accountId từ token hoặc null
+      quantity: +favouriteItem.quantity, // Ép kiểu số
+      size: selectedSizeInfo,
+    };
+    
+    // Cập nhật giỏ hàng trong state
+    const updatedCartItems = [...cartItems];
+    const existingItemIndex = updatedCartItems.findIndex(item => item.size.id === cartItem.size.id);
+    if (existingItemIndex !== -1) {
+      updatedCartItems[existingItemIndex].quantity += cartItem.quantity;
+    } else {
+      updatedCartItems.push(cartItem);
+    }
+    
+    setCartItems(updatedCartItems);
+    Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
+    
+    try {
+      const apiUrl = 'http://localhost:8080/api/guest/carts';
+    
+      const response = await axios.post(apiUrl, cartItem, {
+        headers: { Authorization: token ? `Bearer ${token}` : undefined },
+      });
+    
+      if (response.data && response.data.id) {
+        cartItem.id = response.data.id; // Cập nhật ID của mục giỏ hàng
+        toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
+        
+        // Xóa sản phẩm khỏi danh sách yêu thích
+        handleRemoveFavourite(favouriteItem.id);
+      } else {
+        toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
+        
+        // Xóa sản phẩm khỏi danh sách yêu thích
+        handleRemoveFavourite(favouriteItem.id);
+      }
+    } catch (error) {
+      toast.error('Hết hàng.');
+      console.error('Error adding product to cart:', error);
+    }
+  };
+  
+
+  
+
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
+    }
+  }, [cartItems]); // Chạy lại khi cartItems thay đổi
+
+  const handleRemoveFavourite = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/user/favourites/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setFavourites(prevFavourites => prevFavourites.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Lỗi khi xóa yêu thích:", error);
+      toast.error("Không thể xóa sản phẩm yêu thích.");
+    }
+  };
 
   useEffect(() => {
     const fetchFavourites = async () => {
@@ -90,20 +204,7 @@ export default function ProductsTable({ className, accountId }) {
     fetchProductDetails();
   }, [favourites, currentPage, token]);
 
-  const handleRemoveFavourite = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/api/user/favourites/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
 
-      setFavourites(prevFavourites => prevFavourites.filter(item => item.id !== id));
-
-      toast.success("Đã xóa sản phẩm khỏi danh sách yêu thích!");
-    } catch (error) {
-      console.error("Lỗi khi xóa yêu thích:", error);
-      toast.error("Không thể xóa sản phẩm yêu thích.");
-    }
-  };
 
   const formatPrice = (price) => {
     return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -113,28 +214,22 @@ export default function ProductsTable({ className, accountId }) {
     setCurrentPage(pageNumber);
   };
 
-
-  if (loading) return <div>Đang tải...</div>;
-  if (error) return <div>{error}</div>;
-
-
   const handleOpenModal = (productImage) => {
     setCurrentProductImage(productImage);
     setIsModalOpen(true);
-
-    // Kiểm tra phần tử có tồn tại trước khi gọi focus()
     const modalElement = document.getElementById('modal');
     if (modalElement) {
       modalElement.focus();
     }
   };
 
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    // Trở lại focus ở nơi phù hợp khi đóng modal
     document.getElementById('openModalButton').focus();
   };
+
+  if (loading) return <div>Đang tải...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className={`w-full ${className || ""}`}>
@@ -197,7 +292,7 @@ export default function ProductsTable({ className, accountId }) {
                   </div>
                   <div className="mt-4">
                     <button
-                      onClick={() => handleAddToCart(item)}
+                      onClick={() => addToCart(item)}
                       className="w-full bg-blue-600 text-white py-2 hover:bg-blue-700 transition duration-300 ease-in-out"
                     >
                       Thêm vào giỏ hàng
