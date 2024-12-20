@@ -21,8 +21,8 @@ export default function Newpassword() {
       return;
     }
 
-    if (newPassword.length < 8) {
-      toast.error("Mật khẩu phải có ít nhất 8 ký tự");
+    if (newPassword.length < 6) {
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 

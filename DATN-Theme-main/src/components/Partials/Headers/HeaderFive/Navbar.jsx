@@ -167,16 +167,16 @@ export default function Navbar({ className }) {
           {/* Navigation */}
           <div className="flex space-x-6">
             <Link to="/" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
-              Trang Chủ
+              TRANG CHỦ
             </Link>
             <Link to="/all-products" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
-              Sản Phẩm
+             SẢN PHẨM
             </Link>
             <Link to="/about" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
-              Về Chúng tôi
+              VỀ CHÚNG TÔI
             </Link>
             <Link to="/contact" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
-              Liên Hệ
+              LIÊN HỆ
             </Link>
           </div>
 

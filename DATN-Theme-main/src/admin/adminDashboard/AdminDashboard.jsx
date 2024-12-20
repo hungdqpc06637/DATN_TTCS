@@ -292,6 +292,9 @@ const StatisticsPage = () => {
           <h2 className="text-xl font-semibold">Tổng số đơn hàng hoàn thành</h2>
           <p className="text-3xl font-bold text-red-600">{statistics.totalOrders}</p>
         </div>
+      </div>
+
+      <div className={`grid grid-cols-2 md:grid-cols-2 gap-6 mt-10`}>
 
         <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center">
           <TopSellingProducts products={tableData} />
@@ -302,14 +305,19 @@ const StatisticsPage = () => {
         </div>
       </div>
 
-
-
       <Tabs>
         <TabList className="mt-10 grid grid-cols-3 md:grid-cols-3 gap-6">
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Thống kê sản phẩm đã bán</Tab>
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Biểu đồ doanh thu theo năm</Tab>
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Biểu đồ doanh thu theo tháng</Tab>
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
+            Thống kê sản phẩm đã bán
+          </Tab>
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
+            Biểu đồ doanh thu theo năm
+          </Tab>
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
+            Biểu đồ doanh thu theo tháng
+          </Tab>
         </TabList>
+
         {/* Tab 1: Thống kê chi tiết sản phẩm */}
         <TabPanel>
           <div className="mt-10 bg-white shadow-lg rounded-lg p-6">
@@ -409,7 +417,7 @@ const StatisticsPage = () => {
           <div className="mt-10 bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Biểu đồ doanh thu theo tháng</h2>
             <select value={selectedYear} onChange={(e) => setSelectedYear(parseInt(e.target.value))}>
-              {[2023, 2024, 2025].map((year) => (
+              {[2023, 2024, 2025, 2026, 2027, 2028].map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>

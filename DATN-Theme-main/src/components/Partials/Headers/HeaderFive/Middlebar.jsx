@@ -101,10 +101,10 @@ export default function Middlebar({ className }) {
               ) : (
                 <div className="flex space-x-8">
                   <Link to="/login" className="text-sm text-gray-700 hover:text-blue-500 transition duration-200">
-                    Đăng nhập
+                    ĐĂNG NHẬP
                   </Link>
                   <Link to="/signup" className="text-sm text-gray-700 hover:text-blue-500 transition duration-200">
-                    Đăng ký
+                    ĐĂNG KÝ
                   </Link>
                 </div>
               )}

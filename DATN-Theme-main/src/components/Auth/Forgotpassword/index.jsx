@@ -79,7 +79,7 @@ export default function Forgotpassword() {
             <button
               type="button"
               onClick={handleSubmit}
-              className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition transform hover:scale-105"
+              className="w-full py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition transform hover:scale-105"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Đang xử lý..." : "KIỂM TRA"}
