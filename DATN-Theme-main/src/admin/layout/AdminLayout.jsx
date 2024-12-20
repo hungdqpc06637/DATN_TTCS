@@ -35,8 +35,8 @@ const AdminLayout = ({ children }) => {
     const savedNotifications = localStorage.getItem('notifications');
     const savedOrderCount = localStorage.getItem('newOrderCount');
 
-    console.log("Restored from localStorage - notifications:", savedNotifications);
-    console.log("Restored from localStorage - newOrderCount:", savedOrderCount);
+    // console.log("Restored from localStorage - notifications:", savedNotifications);
+    // console.log("Restored from localStorage - newOrderCount:", savedOrderCount);
 
     if (savedNotifications) {
       setNotifications(JSON.parse(savedNotifications)); // Lấy dữ liệu thông báo từ localStorage
@@ -50,11 +50,11 @@ const AdminLayout = ({ children }) => {
 
   useEffect(() => {
     if (notifications.length > 0) {
-      console.log("Saving notifications to localStorage:", notifications);
+      //console.log("Saving notifications to localStorage:", notifications);
       localStorage.setItem('notifications', JSON.stringify(notifications)); // Lưu danh sách thông báo
     }
     if (newOrderCount >= 0) {
-      console.log("Saving newOrderCount to localStorage:", newOrderCount);
+      //console.log("Saving newOrderCount to localStorage:", newOrderCount);
       localStorage.setItem('newOrderCount', newOrderCount); // Lưu số lượng thông báo
     }
   }, [newOrderCount, notifications]); // Lưu khi có sự thay đổi trong state
@@ -63,14 +63,14 @@ const AdminLayout = ({ children }) => {
     const socket = new WebSocket('ws://localhost:8080/admin/notifications'); // URL WebSocket của bạn
 
     socket.onopen = () => {
-      console.log('Connected to WebSocket');
+      //console.log('Connected to WebSocket');
     };
 
     socket.onmessage = (event) => {
       try {
         let orderData = event.data;
 
-        console.log("Received WebSocket message:", orderData);
+       // console.log("Received WebSocket message:", orderData);
 
         // Kiểm tra nếu là thông báo đơn hàng mới
         if (orderData.startsWith("Đơn hàng mới")) {
@@ -88,7 +88,7 @@ const AdminLayout = ({ children }) => {
 
           setNewOrderCount(prevCount => {
             const updatedCount = prevCount + 1;
-            console.log("Updated newOrderCount:", updatedCount);
+            //console.log("Updated newOrderCount:", updatedCount);
 
             // Lưu vào localStorage
             localStorage.setItem('newOrderCount', updatedCount);
@@ -123,20 +123,20 @@ const AdminLayout = ({ children }) => {
 
             setIsModalOpen(true);
           } catch (parseError) {
-            console.log('Received data is not valid JSON:', orderData);
+            //console.log('Received data is not valid JSON:', orderData);
           }
         }
       } catch (error) {
-        console.log('Error parsing WebSocket message:', error);
+        //console.log('Error parsing WebSocket message:', error);
       }
     };
 
     socket.onerror = (error) => {
-      console.log('WebSocket error:', error);
+      //console.log('WebSocket error:', error);
     };
 
     socket.onclose = () => {
-      console.log('Disconnected from WebSocket');
+      //console.log('Disconnected from WebSocket');
     };
 
     return () => {
@@ -163,7 +163,7 @@ const AdminLayout = ({ children }) => {
     // Cập nhật lại newOrderCount khi có thông báo được đánh dấu là đã xem
     setNewOrderCount(prevCount => {
       const updatedCount = prevCount > 0 ? prevCount - 1 : 0; // Giảm đi 1 khi có thông báo đã xem
-      console.log("Updated newOrderCount:", updatedCount);
+    //  console.log("Updated newOrderCount:", updatedCount);
 
       // Lưu vào localStorage
       localStorage.setItem('newOrderCount', updatedCount);
