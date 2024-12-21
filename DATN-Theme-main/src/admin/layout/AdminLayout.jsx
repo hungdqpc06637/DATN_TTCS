@@ -197,8 +197,8 @@ const AdminLayout = ({ children }) => {
           } w-64 px-6 py-4 flex flex-col`}
       >
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-blue-600">Admin</h1>
-          <button className="text-gray-700" onClick={toggleSidebar}>
+          <h1 className="text-2xl font-bold text-gray-800">Admin</h1>
+          <button className="text-gray-300" onClick={toggleSidebar}>
             <FaTimes size={24} />
           </button>
         </div>
@@ -219,9 +219,9 @@ const AdminLayout = ({ children }) => {
                 key={index}
                 to={link.to}
                 onClick={() => setActiveLink(link.to)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeLink === link.to
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-600 hover:bg-blue-100'
+                className={`flex items-center gap-3 px-4 py-4 rounded-lg transition-colors ${activeLink === link.to
+                  ? 'bg-gray-800 text-white'
+                  : 'text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 {link.icon}
