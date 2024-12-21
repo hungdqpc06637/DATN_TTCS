@@ -334,12 +334,6 @@ const AdminLayout = ({ children }) => {
                 </div>
               )}
             </button>
-
-
-            {/* User Button */}
-            <button className="text-white hover:text-gray-300 transition-colors duration-200">
-              <FaUserCircle size={20} />
-            </button>
           </div>
 
         </div>
