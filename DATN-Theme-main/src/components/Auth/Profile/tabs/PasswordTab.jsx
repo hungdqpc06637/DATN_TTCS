@@ -42,6 +42,10 @@ export default function PasswordTab() {
       toast.error("Mật khẩu mới và xác nhận mật khẩu không khớp!");
       return;
     }
+    if (newPassword.length < 6) {
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
 
     // Tạo payload cho yêu cầu
     const payload = {

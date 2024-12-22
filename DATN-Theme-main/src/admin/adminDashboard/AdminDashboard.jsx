@@ -317,11 +317,6 @@ const StatisticsPage = () => {
           <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
             Biểu đồ doanh thu theo tháng
           </Tab>
-
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Thống kê sản phẩm đã bán ra</Tab>
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Biểu đồ doanh thu theo năm</Tab>
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Biểu đồ doanh thu theo tháng</Tab>
-
         </TabList>
 
         {/* Tab 1: Thống kê chi tiết sản phẩm */}

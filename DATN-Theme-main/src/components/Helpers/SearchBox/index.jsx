@@ -64,7 +64,7 @@ export default function SearchBox({ className }) {
     if (searchTerm.trim()) {
       const encodedSearchTerm = encodeURIComponent(searchTerm.trim());
       navigate(`/all-products?s=${encodedSearchTerm}`);
-      // window.location.reload(); // Tự động tải lại trang với kết quả tìm kiếm
+      //  window.location.reload(); // Tự động tải lại trang với kết quả tìm kiếm
     }
   };
 
