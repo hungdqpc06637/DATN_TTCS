@@ -73,7 +73,7 @@ export default function Otp() {
                   <div className="signin-area mb-3.5">
                     <button
                       type="button"
-                      className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition transform hover:scale-105"
+                      className="w-full py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition transform hover:scale-105"
                       onClick={handleOtpSubmit} // Gọi hàm xác thực OTP
                     >
                       Xác nhận

@@ -191,7 +191,7 @@ const StatisticsPage = () => {
         setFilteredDataProduct(orderDetailsResponse.data);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu thống kê:", error);
-        setError("Có lỗi xảy ra. Vui lòng thử lại sau.");
+        setError("Có lỗi xảy ra. Bạn vui lòng thử lại sau.");
       } finally {
         setLoading(false); // Kết thúc loading
       }
@@ -233,8 +233,8 @@ const StatisticsPage = () => {
           return monthlySales.filter(s => parseInt(s.year, 10) === selectedYear && parseInt(s.month, 10) === i + 1)
             .reduce((total, s) => total + parseFloat(s.total), 0);
         }),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(89, 172, 172, 0.6)',
+        borderColor: 'rgb(68, 95, 95)',
         borderWidth: 1,
       },
     ],
@@ -246,14 +246,14 @@ const StatisticsPage = () => {
       {
         label: `Doanh thu theo ngày (VND) - ${selectedMonth}/${selectedYear}`,
         data: revenueByDay,
-        backgroundColor: 'rgba(153, 102, 255, 0.6)',
-        borderColor: 'rgba(153, 102, 255, 1)',
+        backgroundColor: 'rgba(96, 71, 143, 0.6)',
+        borderColor: 'rgb(41, 32, 61)',
         borderWidth: 1,
       },
     ],
   };
 
-  // Tùy chỉnh cho biểu đồ
+  // Tùy chỉnh cho biểu đồ thống kê
   const chartOptions = {
     responsive: true,
     scales: {
@@ -292,6 +292,9 @@ const StatisticsPage = () => {
           <h2 className="text-xl font-semibold">Tổng số đơn hàng hoàn thành</h2>
           <p className="text-3xl font-bold text-red-600">{statistics.totalOrders}</p>
         </div>
+      </div>
+
+      <div className={`grid grid-cols-2 md:grid-cols-2 gap-6 mt-10`}>
 
         <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center">
           <TopSellingProducts products={tableData} />
@@ -302,14 +305,25 @@ const StatisticsPage = () => {
         </div>
       </div>
 
-
-
       <Tabs>
         <TabList className="mt-10 grid grid-cols-3 md:grid-cols-3 gap-6">
-          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Thống kê sản phẩm đã bán</Tab>
+
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
+            Thống kê sản phẩm đã bán
+          </Tab>
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
+            Biểu đồ doanh thu theo năm
+          </Tab>
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold rounded-lg shadow-lg transition transform hover:scale-105 hover:shadow-2xl active:scale-95 active:shadow-lg">
+            Biểu đồ doanh thu theo tháng
+          </Tab>
+
+          <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Thống kê sản phẩm đã bán ra</Tab>
           <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Biểu đồ doanh thu theo năm</Tab>
           <Tab className="bg-white p-6 flex flex-col items-center justify-center font-semibold">Biểu đồ doanh thu theo tháng</Tab>
+
         </TabList>
+
         {/* Tab 1: Thống kê chi tiết sản phẩm */}
         <TabPanel>
           <div className="mt-10 bg-white shadow-lg rounded-lg p-6">
@@ -357,7 +371,7 @@ const StatisticsPage = () => {
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                 onClick={exportToExcel}
               >
-                Xuất Excel
+                Xuất File Excel
               </button>
             </div>
 
@@ -369,16 +383,16 @@ const StatisticsPage = () => {
                     <th className="border border-gray-300 px-4 py-2 text-left">Tên sản phẩm</th>
                     <th className="border border-gray-300 px-4 py-2 text-left">Giá sản phẩm</th>
                     <th className="border border-gray-300 px-4 py-2 text-center">Số lượng bán</th>
-                    <th className="border border-gray-300 px-4 py-2 text-center">Ngày</th>
-                    <th className="border border-gray-300 px-4 py-2 text-right">Tổng tiền (VND)</th>
+                    <th className="border border-gray-300 px-4 py-2 text-center">Ngày </th>
+                    <th className="border border-gray-300 px-4 py-2 text-right">Tổng tiền(VND)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {currentItems.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-100">
+                    <tr key={index} className="hover:bg-gray-200">
                       <td className="border border-gray-300 px-4 py-2 text-center">{item.orderDetailsId}</td>
                       <td className="border border-gray-300 px-4 py-2">{item.productName}</td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 text-center">
                         {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.productPrice)}
                       </td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{item.quantity}</td>
@@ -404,19 +418,19 @@ const StatisticsPage = () => {
           </div>
         </TabPanel>
 
-        {/* Tab 2: Biểu đồ doanh thu năm*/}
+        {/* Tab 2: Biểu đồ doanh thu năm */}
         <TabPanel>
           <div className="mt-10 bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Biểu đồ doanh thu theo tháng</h2>
             <select value={selectedYear} onChange={(e) => setSelectedYear(parseInt(e.target.value))}>
-              {[2023, 2024, 2025].map((year) => (
+              {[2023, 2024, 2025, 2026, 2027, 2028].map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
             <Bar data={chartData} options={{ responsive: true, scales: { y: { beginAtZero: true } } }} />
           </div>
         </TabPanel>
-        {/* Tab 2: Biểu đồ doanh thu tháng*/}
+        {/* Tab 2: Biểu đồ doanh thu tháng */}
         <TabPanel>
           <div className="mt-10 bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Biểu đồ doanh thu theo ngày</h2>
