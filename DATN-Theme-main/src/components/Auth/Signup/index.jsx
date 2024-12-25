@@ -218,9 +218,6 @@ export default function Signup() {
           <a href="/login" className="hover:underline text-purple-600">
             Đăng nhập
           </a>
-          <a href="/signup" className="hover:underline text-purple-600">
-            Đăng ký mới
-          </a>
         </div>
       </div>
     </div>

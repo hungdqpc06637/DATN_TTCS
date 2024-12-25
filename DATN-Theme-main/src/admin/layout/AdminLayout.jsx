@@ -35,8 +35,8 @@ const AdminLayout = ({ children }) => {
     const savedNotifications = localStorage.getItem('notifications');
     const savedOrderCount = localStorage.getItem('newOrderCount');
 
-    console.log("Restored from localStorage - notifications:", savedNotifications);
-    console.log("Restored from localStorage - newOrderCount:", savedOrderCount);
+    // console.log("Restored from localStorage - notifications:", savedNotifications);
+    // console.log("Restored from localStorage - newOrderCount:", savedOrderCount);
 
     if (savedNotifications) {
       setNotifications(JSON.parse(savedNotifications)); // Lấy dữ liệu thông báo từ localStorage
@@ -50,11 +50,11 @@ const AdminLayout = ({ children }) => {
 
   useEffect(() => {
     if (notifications.length > 0) {
-      console.log("Saving notifications to localStorage:", notifications);
+      //console.log("Saving notifications to localStorage:", notifications);
       localStorage.setItem('notifications', JSON.stringify(notifications)); // Lưu danh sách thông báo
     }
     if (newOrderCount >= 0) {
-      console.log("Saving newOrderCount to localStorage:", newOrderCount);
+      //console.log("Saving newOrderCount to localStorage:", newOrderCount);
       localStorage.setItem('newOrderCount', newOrderCount); // Lưu số lượng thông báo
     }
   }, [newOrderCount, notifications]); // Lưu khi có sự thay đổi trong state
@@ -63,14 +63,14 @@ const AdminLayout = ({ children }) => {
     const socket = new WebSocket('ws://localhost:8080/admin/notifications'); // URL WebSocket của bạn
 
     socket.onopen = () => {
-      console.log('Connected to WebSocket');
+      //console.log('Connected to WebSocket');
     };
 
     socket.onmessage = (event) => {
       try {
         let orderData = event.data;
 
-        console.log("Received WebSocket message:", orderData);
+       // console.log("Received WebSocket message:", orderData);
 
         // Kiểm tra nếu là thông báo đơn hàng mới
         if (orderData.startsWith("Đơn hàng mới")) {
@@ -88,7 +88,7 @@ const AdminLayout = ({ children }) => {
 
           setNewOrderCount(prevCount => {
             const updatedCount = prevCount + 1;
-            console.log("Updated newOrderCount:", updatedCount);
+            //console.log("Updated newOrderCount:", updatedCount);
 
             // Lưu vào localStorage
             localStorage.setItem('newOrderCount', updatedCount);
@@ -123,20 +123,20 @@ const AdminLayout = ({ children }) => {
 
             setIsModalOpen(true);
           } catch (parseError) {
-            console.log('Received data is not valid JSON:', orderData);
+            //console.log('Received data is not valid JSON:', orderData);
           }
         }
       } catch (error) {
-        console.log('Error parsing WebSocket message:', error);
+        //console.log('Error parsing WebSocket message:', error);
       }
     };
 
     socket.onerror = (error) => {
-      console.log('WebSocket error:', error);
+      //console.log('WebSocket error:', error);
     };
 
     socket.onclose = () => {
-      console.log('Disconnected from WebSocket');
+      //console.log('Disconnected from WebSocket');
     };
 
     return () => {
@@ -163,7 +163,7 @@ const AdminLayout = ({ children }) => {
     // Cập nhật lại newOrderCount khi có thông báo được đánh dấu là đã xem
     setNewOrderCount(prevCount => {
       const updatedCount = prevCount > 0 ? prevCount - 1 : 0; // Giảm đi 1 khi có thông báo đã xem
-      console.log("Updated newOrderCount:", updatedCount);
+    //  console.log("Updated newOrderCount:", updatedCount);
 
       // Lưu vào localStorage
       localStorage.setItem('newOrderCount', updatedCount);
@@ -197,8 +197,8 @@ const AdminLayout = ({ children }) => {
           } w-64 px-6 py-4 flex flex-col`}
       >
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-blue-600">Admin</h1>
-          <button className="text-gray-700" onClick={toggleSidebar}>
+          <h1 className="text-2xl font-bold text-gray-800">Admin</h1>
+          <button className="text-gray-300" onClick={toggleSidebar}>
             <FaTimes size={24} />
           </button>
         </div>
@@ -219,9 +219,9 @@ const AdminLayout = ({ children }) => {
                 key={index}
                 to={link.to}
                 onClick={() => setActiveLink(link.to)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeLink === link.to
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-600 hover:bg-blue-100'
+                className={`flex items-center gap-3 px-4 py-4 rounded-lg transition-colors ${activeLink === link.to
+                  ? 'bg-gray-800 text-white'
+                  : 'text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 {link.icon}
@@ -333,12 +333,6 @@ const AdminLayout = ({ children }) => {
                   </div>
                 </div>
               )}
-            </button>
-
-
-            {/* User Button */}
-            <button className="text-white hover:text-gray-300 transition-colors duration-200">
-              <FaUserCircle size={20} />
             </button>
           </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import InputCom from '../../Helpers/InputCom';
 import LayoutHomeFive from '../../Partials/LayoutHomeFive';
@@ -138,135 +138,136 @@ export default function Login() {
   };
 
   return (
-<LayoutHomeFive childrenClasses="pt-0 pb-0">
-  <div className="login-page-wrapper w-full py-10">
-    <div className="container-x mx-auto flex items-center justify-center h-full">
-      {/* Cột hình ảnh */}
-      <div className="hidden lg:flex w-1/2 flex-col items-center justify-center bg-gray p-2">
-        <img
-          src="/assets/images/login.svg" // Đảm bảo đường dẫn hình ảnh đúng
-          className="w-full max-h-[500px] object-contain"
-        />
-
-        {/* Chữ dưới hình ảnh */}
-        <div className="mt-4 text-center">
-          <h3 className="text-xl font-semibold text-red-500 mb-2">QUYỀN LỢI THÀNH VIÊN</h3>
-          <ul className="text-sm text-gray-600">
-            <li className="flex items-center space-x-2 mb-1">
-              <span className="text-green-500">✔</span>
-              <span>Mua hàng khắp thế giới cực dễ dàng, nhanh chóng</span>
-            </li>
-            <li className="flex items-center space-x-2 mb-1">
-              <span className="text-green-500">✔</span>
-              <span>Theo dõi chi tiết đơn hàng, địa chỉ thanh toán dễ dàng</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span className="text-green-500">✔</span>
-              <span>Nhận nhiều chương trình ưu đãi hấp dẫn từ chúng tôi</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Cột form đăng nhập */}
-      <div className="w-full lg:w-1/2 max-w-md bg-white p-8 rounded-lg shadow-lg border border-gray-300">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">ĐĂNG NHẬP</h1>
-          <p className="text-sm text-gray-600">Vui lòng nhập thông tin đăng nhập</p>
-        </div>
-
-        <form className="space-y-4" onSubmit={handleLogin}>
-          <div>
-            <InputCom
-              placeholder="Nhập tài khoản"
-              label="Tài khoản"
-              name="username"
-              type="text"
-              value={username}
-              inputHandler={(e) => setUsername(e.target.value)}
-              className="w-full p-4 h-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+    <LayoutHomeFive childrenClasses="pt-0 pb-0">
+      <div className="login-page-wrapper w-full py-10">
+        <div className="container-x mx-auto flex items-center justify-center h-full">
+          {/* Cột hình ảnh */}
+          <div className="hidden lg:flex w-1/2 flex-col items-center justify-center bg-gray p-2">
+            <img
+              src="/assets/images/login.svg" // Đảm bảo đường dẫn hình ảnh đúng
+              className="w-full max-h-[500px] object-contain"
             />
-          </div>
 
-          <div>
-            <InputCom
-              placeholder="Nhập mật khẩu"
-              label="Mật khẩu"
-              name="password"
-              type="password"
-              value={password}
-              inputHandler={(e) => setPassword(e.target.value)}
-              className="w-full p-4 h-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
-
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="remember-me"
-                className="w-5 h-5 text-gray-500 border-gray-300 rounded focus:ring-2 focus:ring-gray-500"
-              />
-              <label htmlFor="remember-me" className="text-sm text-gray-600">
-                Ghi nhớ
-              </label>
+            {/* Chữ dưới hình ảnh */}
+            <div className="mt-4 text-center">
+              <h3 className="text-xl font-semibold text-red-500 mb-2">QUYỀN LỢI THÀNH VIÊN</h3>
+              <ul className="text-sm text-gray-600">
+                <li className="flex items-center space-x-2 mb-1">
+                  <span className="text-green-500">✔</span>
+                  <span>Mua hàng khắp thế giới cực dễ dàng, nhanh chóng</span>
+                </li>
+                <li className="flex items-center space-x-2 mb-1">
+                  <span className="text-green-500">✔</span>
+                  <span>Theo dõi chi tiết đơn hàng, địa chỉ thanh toán dễ dàng</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <span className="text-green-500">✔</span>
+                  <span>Nhận nhiều chương trình ưu đãi hấp dẫn từ chúng tôi</span>
+                </li>
+              </ul>
             </div>
-            <a href="/forgot-password" className="text-sm text-red-500 hover:underline">
-              Quên mật khẩu?
-            </a>
           </div>
 
-          <button
-            type="submit"
-             className="w-full py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition transform hover:scale-105"
-          >
-            {loading ? "Đang đăng nhập..." : "ĐĂNG NHẬP"}
-          </button>
-        </form>
+          {/* Cột form đăng nhập */}
+          <div className="w-full lg:w-1/2 max-w-md bg-white p-8 rounded-lg shadow-lg border border-gray-300">
+            <div className="text-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">ĐĂNG NHẬP</h1>
+              <p className="text-sm text-gray-600">Vui lòng nhập thông tin đăng nhập</p>
+            </div>
 
-        <div className="flex items-center my-4">
-          <div className="flex-grow h-px bg-gray-300"></div>
-          <span className="px-3 text-sm text-gray-600">hoặc</span>
-          <div className="flex-grow h-px bg-gray-300"></div>
-        </div>
-
-        {/* Đăng nhập Google */}
-        <div className="login-google">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => {
-              console.log('Đăng nhập không thành công');
-              toast.error('Đăng nhập không thành công', { position: 'top-right', autoClose: 3000 });
-            }}
-            render={(renderProps) => (
-              <button
-                className="w-full flex items-center justify-center gap-2 py-3 bg-red-700 text-white font-semibold rounded-lg shadow-md hover:opacity-90 transition-all"
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-              >
-                <img
-                  src="/assets/images/google-icon.webp" // Đảm bảo đường dẫn đúng tới icon Google
-                  alt="Google Icon"
-                  className="w-6 h-6"
+            <form className="space-y-4" onSubmit={handleLogin}>
+              <div>
+                <InputCom
+                  placeholder="Nhập tài khoản"
+                  label="Tài khoản"
+                  name="username"
+                  type="text"
+                  value={username}
+                  inputHandler={(e) => setUsername(e.target.value)}
+                  className="w-full p-4 h-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
-                <span>Đăng nhập bằng Google</span>
-              </button>
-            )}
-          />
-        </div>
+              </div>
 
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Bạn chưa có tài khoản?{" "}
-            <a href="/signup" className="text-red-500 hover:underline">
-              Tạo tài khoản mới
-            </a>
-          </p>
+              <div>
+                <InputCom
+                  placeholder="Nhập mật khẩu"
+                  label="Mật khẩu"
+                  name="password"
+                  type="password"
+                  value={password}
+                  inputHandler={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 h-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember-me"
+                    className="w-5 h-5 text-gray-500 border-gray-300 rounded focus:ring-2 focus:ring-gray-500"
+                  />
+                  <label htmlFor="remember-me" className="text-sm text-gray-600">
+                    Ghi nhớ
+                  </label>
+                </div>
+                <a href="/forgot-password" className="text-sm text-red-500 hover:underline">
+                  Quên mật khẩu?
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition transform hover:scale-105"
+              >
+                {loading ? "Đang đăng nhập..." : "ĐĂNG NHẬP"}
+              </button>
+            </form>
+
+            <div className="flex items-center my-4">
+              <div className="flex-grow h-px bg-gray-300"></div>
+              <span className="px-3 text-sm text-gray-600">hoặc</span>
+              <div className="flex-grow h-px bg-gray-300"></div>
+            </div>
+
+            {/* Đăng nhập Google */}
+            <div className="login-google">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  console.log('Đăng nhập không thành công');
+                  toast.error('Đăng nhập không thành công', { position: 'top-right', autoClose: 3000 });
+                }}
+                render={(renderProps) => (
+                  <button
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-red-700 text-white font-semibold rounded-lg shadow-md hover:opacity-90 transition-all"
+                    onClick={renderProps.onClick}
+                    disabled={renderProps.disabled}
+                  >
+                    <img
+                      src="/assets/images/google-icon.webp" // Đảm bảo đường dẫn đúng tới icon Google
+                      alt="Google Icon"
+                      className="w-6 h-6"
+                    />
+                    <span>Đăng nhập bằng Google</span>
+                  </button>
+                )}
+              />
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Bạn chưa có tài khoản?{" "}
+                <a href="/signup" className="text-red-500 hover:underline">
+                  Tạo tài khoản mới
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</LayoutHomeFive>
+      <ToastContainer />
+    </LayoutHomeFive>
 
   );
 }
