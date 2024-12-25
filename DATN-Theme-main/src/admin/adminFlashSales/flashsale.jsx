@@ -543,11 +543,12 @@ const FlashSaleManagementPage = () => {
       </div>
 
       <div className="mt-6">
-        <h2 className="text-4xl font-extrabold text-red-600 mb-6 text-center 
+      <h2 className="text-4xl font-extrabold mb-6 text-center 
   shadow-md hover:shadow-lg transition-all duration-300 
   p-4 rounded-lg bg-gradient-to-r from-red-500 to-red-700 text-white">
-          Quản lý Sản Phẩm Trong Chương Trình Giảm Giá
-        </h2>
+  Quản lý Sản Phẩm Trong Chương Trình Giảm Giá
+</h2>
+
 
 
         {/* Chọn sản phẩm */}

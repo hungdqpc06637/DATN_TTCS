@@ -374,8 +374,8 @@ const SizeManagementPage = () => {
   return (
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
       <ToastContainer position="top-right" autoClose={1000} />
-      <div className="mb-6">
-        <label className="block mb-4 text-lg font-semibold text-gray-800">
+      <div className="grid grid-cols-2 gap-6 mb-6">
+        <label className="block text-lg font-semibold text-gray-800">
           Chọn sản phẩm:
           <Select
             value={productOptions.find((option) => option.value === selectedProduct)} // Gán giá trị hiện tại
@@ -396,18 +396,18 @@ const SizeManagementPage = () => {
           />
         </label>
 
-        <label className="block mb-4 text-lg font-semibold text-gray-800">
+        <label className="block text-lg font-semibold text-gray-800">
           Nhập kích thước:
           <input
             type="text"
-            value={selectedSize.name}  // Gắn giá trị từ selectedSize.name
+            value={selectedSize.name} // Gắn giá trị từ selectedSize.name
             onChange={handleSizeChange} // Gọi hàm handleSizeChange khi giá trị thay đổi
             placeholder="Nhập kích thước (ví dụ: S, M, L, XL)"
             className="block w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
         </label>
 
-        <label className="block mb-4 text-lg font-semibold text-gray-800">
+        <label className="block text-lg font-semibold text-gray-800">
           Nhập số lượng tồn kho:
           <input
             type="text"
@@ -418,7 +418,7 @@ const SizeManagementPage = () => {
           />
         </label>
 
-        <div className="relative mb-6">
+        <div className="relative">
           <label className="block mb-2 text-lg font-semibold text-gray-800">
             Chọn màu:
           </label>
@@ -442,62 +442,79 @@ const SizeManagementPage = () => {
             </div>
           )}
         </div>
-
-        <div className="flex gap-4">
-          {editIndex !== null ? (
-            <>
-              <button
-                onClick={() => {
-                  // Kiểm tra nếu chưa chọn một size hợp lệ
-                  if (!selectedSize || !selectedSize.id) {
-                    toast.error('Vui lòng chọn một size để cập nhật!', {
-                      position: "top-right",
-                      autoClose: 2000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                    });
-                    return; // Dừng lại nếu chưa chọn size
-                  }
-                  updateSize(selectedSize.id); // Truyền sizeId vào hàm
-                }}
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
-              >
-                Cập nhật
-              </button>
-
-              <button
-                onClick={resetEditState}
-                className="bg-gray-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition duration-200"
-              >
-                Đặt lại
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={addSize}
-              className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition duration-200"
-            >
-              Thêm
-            </button>
-          )}
-        </div>
-
       </div>
 
-      <div className="container mx-auto p-6 bg-gray-50 rounded-lg ">
-        <h2 className="text-2xl font-bold mb-6">Quản lý Kích thước Sản phẩm</h2>
-        <div className="bg-white rounded-xl overflow-hidden">
-          <table className="min-w-full table-auto">
-            <thead>
-              <tr className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
-                <th className="py-4 px-6 text-left font-semibold uppercase tracking-wider">Sản phẩm</th>
-                <th className="py-4 px-6 text-left font-semibold uppercase tracking-wider">Kích thước</th>
-                <th className="py-4 px-6 text-left font-semibold uppercase tracking-wider">Màu</th>
-                <th className="py-4 px-6 text-left font-semibold uppercase tracking-wider">Tồn kho</th>
-                <th className="py-4 px-6 text-left font-semibold uppercase tracking-wider">Hành động</th>
+      <div className="flex justify-center gap-6 mt-4">
+        {editIndex !== null ? (
+          <>
+            <button
+              onClick={() => {
+                if (!selectedSize || !selectedSize.id) {
+                  toast.error('Vui lòng chọn một size để cập nhật!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  });
+                  return;
+                }
+                updateSize(selectedSize.id);
+              }}
+              className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+            >
+              Cập nhật
+            </button>
+
+            <button
+              onClick={resetEditState}
+              className="bg-gray-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition duration-200"
+            >
+              Đặt lại
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={addSize}
+            className="flex items-center bg-gradient-to-r from-green-400 to-green-600 text-white font-medium px-6 py-3 rounded-lg shadow-lg hover:from-green-500 hover:to-green-700 hover:scale-105 transition-transform duration-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-5 h-5 mr-2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Thêm
+          </button>
+
+        )}
+      </div>
+
+
+      <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 transition-transform duration-300">
+          Quản lý Kích Thước Sản Phẩm
+        </h1>
+
+        <div className="bg-white rounded-xl overflow-hidden shadow-lg">
+          <table className="min-w-full table-auto text-gray-800">
+            <thead className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
+              <tr>
+                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Sản phẩm</th>
+                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Kích thước</th>
+                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Màu</th>
+                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Tồn kho</th>
+                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -509,18 +526,18 @@ const SizeManagementPage = () => {
                 </tr>
               ) : (
                 currentItems.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition-colors duration-300">
-                    <td className="py-4 px-6 border-b">{item.product.name}</td>
-                    <td className="py-4 px-6 border-b">{item.name}</td>
-                    <td className="py-4 px-6 border-b flex items-center gap-2">
+                  <tr key={index} className="hover:bg-gray-100 transition-colors duration-300">
+                    <td className="py-4 px-6 border-b border-gray-300">{item.product.name}</td>
+                    <td className="py-4 px-6 border-b border-gray-300">{item.name}</td>
+                    <td className="py-4 px-6 border-b border-gray-300 flex items-center gap-2">
                       <span
                         className="inline-block w-6 h-6 rounded-full border border-gray-200"
                         style={{ backgroundColor: item.color.name }}
                       ></span>
                       {item.color.name}
                     </td>
-                    <td className="py-4 px-6 border-b text-gray-600">{item.quantityInStock}</td>
-                    <td className="py-4 px-6 border-b flex gap-3">
+                    <td className="py-4 px-6 border-b border-gray-300 text-gray-600">{item.quantityInStock}</td>
+                    <td className="py-4 px-6 border-b border-gray-300 flex gap-3">
                       <button
                         onClick={() => handleEditProduct(item)}
                         className="flex items-center justify-center bg-yellow-400 text-white px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors duration-300 shadow-sm"
@@ -560,8 +577,8 @@ const SizeManagementPage = () => {
                   if (number !== '...') handlePageChange(number);
                 }}
                 className={`px-4 py-2 mx-2 text-lg rounded-lg ${number === currentPage
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-blue-500 border border-blue-500'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-blue-500 border border-blue-500'
                   } hover:bg-blue-600 hover:text-white transition-colors duration-300`}
               >
                 {number}
@@ -578,6 +595,7 @@ const SizeManagementPage = () => {
           </div>
         </div>
       </div>
+
 
     </div>
 

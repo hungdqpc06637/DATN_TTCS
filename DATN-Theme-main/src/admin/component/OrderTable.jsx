@@ -394,7 +394,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
                       disabled={order.status === '99' || order.status === '4' || order.status === '5'} // Disable khi thanh toán thất bại, đã hoàn thành, hoặc đã hủy
                     >
-                      <option value="0" className="text-yellow-600 bg-white">Đã thanh toán, chờ xác nhận</option>
+                      <option value="0" className="text-yellow-600 bg-white">Đã thanh toán</option>
                       <option value="1" className="text-yellow-600 bg-white">Chờ xác nhận</option>
                       <option value="2" className="text-blue-600 bg-white">Đã xác nhận</option>
                       <option value="3" className="text-orange-600 bg-white">Đang giao hàng</option>
@@ -402,7 +402,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
                       {/* Ẩn "Đã hủy" nếu trạng thái là "Đã xác nhận" hoặc "Đang giao hàng" */}
                       {order.status !== '2' && order.status !== '3' && (
                         <option value="5" className="text-red-600 bg-white">Đã hủy</option>
-                      )}
+                      )} 
                       {order.status === '99' && (
                         <option value="99" className="text-gray-600 bg-white">Thanh toán thất bại ví VNPay</option>
                       )}
