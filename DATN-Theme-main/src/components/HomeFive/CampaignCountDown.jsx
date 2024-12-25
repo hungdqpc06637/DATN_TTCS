@@ -9,49 +9,37 @@ export default function CampaignCountDown({ className, lastDate }) {
     startDate: null,
     endDate: null,
   });
-  const [flashSaleActive, setFlashSaleActive] = useState(false);
+  const [isExpired, setIsExpired] = useState(false); // Trạng thái kiểm tra hết hạn
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/guest/product-flashsale");
         const data = await response.json();
-        //console.log(data);
-
-        if (Array.isArray(data)) {
-          setProducts(data);
-
-          // Kiểm tra xem dữ liệu có chứa thông tin flashsale không
-          if (data.length > 0 && data[0].flashsale) {
-            const { name, startdate, enddate } = data[0].flashsale;
-
-            // Chuyển đổi startdate và enddate thành đối tượng Date
-            if (startdate && enddate) {
-              const startDate = new Date(startdate[0], startdate[1] - 1, startdate[2], startdate[3], startdate[4]);
-              const endDate = new Date(enddate[0], enddate[1] - 1, enddate[2], enddate[3], enddate[4], enddate[5]);
-
-              setFlashSaleInfo({
-                name,
-                startDate,
-                endDate,
-              });
-
-              // Kiểm tra xem flash sale có đang diễn ra không
-              const currentDate = new Date();
-              setFlashSaleActive(currentDate >= startDate && currentDate <= endDate);
-            }
-          }
+  
+        if (Array.isArray(data) && data.length > 0 && data[0].flashsale) {
+          const { name, startdate, enddate } = data[0].flashsale;
+  
+          const startDateStr = `${startdate[0]}-${startdate[1].toString().padStart(2, "0")}-${startdate[2].toString().padStart(2, "0")}T${startdate[3].toString().padStart(2, "0")}:${startdate[4].toString().padStart(2, "0")}:00`;
+          const endDateStr = `${enddate[0]}-${enddate[1].toString().padStart(2, "0")}-${enddate[2].toString().padStart(2, "0")}T${enddate[3].toString().padStart(2, "0")}:${enddate[4].toString().padStart(2, "0")}:00`;
+  
+          const startDate = new Date(startDateStr);
+          const endDate = new Date(endDateStr);
+          setFlashSaleInfo({ name, startDate, endDate });
+  
+          if (new Date() > endDate) setIsExpired(true);
         } else {
-          console.error("Data is not an array:", data);
+          console.warn("Không có sản phẩm flash sale hợp lệ.");
         }
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-
     fetchProducts();
   }, []);
-
+  
+  const flashSaleActive = flashSaleInfo.endDate && !isExpired;
+  
   // Gọi hàm CountDown với endDate
   const { showDate, showHour, showMinute, showSecound } = CountDown(flashSaleInfo.endDate);
 
@@ -114,50 +102,16 @@ export default function CampaignCountDown({ className, lastDate }) {
                       </p>
                     </div>
                   </div>
-                  {/* <div className="countdown-title mb-4 text-center text-white">
-                    <h1 className="text-[48px] font-medium tracking-tight mb-4">
-                      ỐI! Giảm giá chớp nhoáng
-                    </h1>
-                    <p className="text-[20px] leading-8 max-w-lg mx-auto">
-                      Bạn nhận được ưu đãi hơn 2k Sản phẩm tốt nhất trong Flash với một chiếc áo có hình dạng đặc biệt để bán.
-                    </p>
-                  </div> */}
                   <div className="w-[120px] h-10 border-b-4 border-white">
                     <div className="h-full inline-flex space-x-2 items-center justify-center">
                       <span className="text-lg font-semibold tracking-wide leading-7 text-white">
                         Mua ngay
                       </span>
-                      <span>
-                        <svg
-                          width="7"
-                          height="11"
-                          viewBox="0 0 7 11"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <rect
-                            x="2.08984"
-                            y="0.636719"
-                            width="6.94219"
-                            height="1.54271"
-                            transform="rotate(45 2.08984 0.636719)"
-                            fill="#fff"
-                          />
-                          <rect
-                            x="7"
-                            y="5.54492"
-                            width="6.94219"
-                            height="1.54271"
-                            transform="rotate(135 7 5.54492)"
-                            fill="#fff"
-                          />
-                        </svg>
-                      </span>
                     </div>
                   </div>
                 </div>
               </Link>
-            ) : (
+            ) : ( 
               <div className="text-center">
                 <p className="text-xl text-red-600 font-bold">Hiện tại không có chương trình giảm giá chớp nhoáng!</p>
               </div>

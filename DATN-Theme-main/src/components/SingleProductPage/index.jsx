@@ -54,7 +54,7 @@ export default function SingleProductPage() {
           }
         });
 
-        //console.log("Dữ liệu đánh giá từ API:", response.data);
+        console.log("Dữ liệu đánh giá từ API:", response.data);
 
         // Kiểm tra xem dữ liệu trả về có phải là mảng không
         if (Array.isArray(response.data)) {
@@ -74,7 +74,7 @@ export default function SingleProductPage() {
     fetchRatings(); // Gọi hàm fetch khi 'id' thay đổi
   }, [id, token]); // Theo dõi id và token khi thay đổi
 
-
+  console.log("commemts:", comments);
   // Sử dụng useParams để lấy productId từ URL
   const { id: idFromURL } = useParams();
   useEffect(() => {
@@ -184,7 +184,8 @@ export default function SingleProductPage() {
                             id: comment.id,
                             stars: comment.stars,
                             review: comment.review,
-                            fullname: comment.fullname,
+                            fullname: comment.orders.account.fullname,
+                            images: comment.orders.account.image,
                             date: comment.date.join("-"), // Chuyển đổi mảng date thành chuỗi
                           }))
                           .slice(0, 20)} // Chỉ lấy 2 comment đầu tiên

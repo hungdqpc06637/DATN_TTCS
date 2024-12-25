@@ -334,10 +334,6 @@ const AdminLayout = ({ children }) => {
                 </div>
               )}
             </button>
-<<<<<<< HEAD
-
-=======
->>>>>>> 68e5b7db72cf750c51f244ba753b48d82b306b74
           </div>
 
         </div>
