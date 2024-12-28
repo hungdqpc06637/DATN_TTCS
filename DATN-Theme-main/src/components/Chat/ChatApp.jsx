@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import {jwtDecode} from 'jwt-decode'; // Import chính xác jwt-decode
 import useWebSocket from './useWebSocket';
 
 const ChatApp = () => {
@@ -41,37 +41,46 @@ const ChatApp = () => {
     };
 
     return (
-        <div style={styles.chatContainer}>
-            <button onClick={toggleChat} style={styles.toggleButton}>
+        <div className="fixed bottom-4 right-4 z-50">
+            <button
+                onClick={toggleChat}
+                className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition">
                 {isChatVisible ? 'Tắt Chat' : 'Bật Chat'}
             </button>
 
             {isChatVisible && (
-                <div style={styles.chatBox}>
-                    <h2>Chat Box</h2>
-                    <div style={styles.messagesContainer}>
+                <div className="mt-4 bg-white border border-gray-300 rounded-md shadow-lg w-80 p-4">
+                    <h2 className="text-lg font-semibold mb-2">Chat Box</h2>
+                    <div className="h-48 overflow-y-auto border border-gray-200 rounded-md p-2 mb-4">
                         {messages.map((msg, index) => {
                             const isUserMessage = msg.role === 'user';
                             return (
-                                <div key={index} style={styles.message}>
-                                    {/* Hiển thị tên người chat thay vì vai trò */}
-                                    <strong style={{ color: isUserMessage ? 'black' : 'blue' }}>
+                                <div key={index} className="mb-2">
+                                    <strong
+                                        className={`text-sm ${
+                                            isUserMessage ? 'text-black' : 'text-blue-500'
+                                        }`}>
                                         {msg.sender || (isUserMessage ? 'User' : 'Admin')}:
                                     </strong>
-                                    {msg.content}
+                                    <p className="text-sm">{msg.content}</p>
                                 </div>
                             );
                         })}
                     </div>
-                    <div style={styles.inputContainer}>
+                    <div className="flex items-center">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            style={styles.input}
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-300"
                             placeholder="Type a message"
                         />
-                        <button onClick={handleSend} disabled={!isConnected} style={styles.sendButton}>
+                        <button
+                            onClick={handleSend}
+                            disabled={!isConnected}
+                            className={`ml-2 px-4 py-1 rounded-md text-white ${
+                                isConnected ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400'
+                            } transition`}>
                             Gửi
                         </button>
                     </div>
@@ -79,60 +88,6 @@ const ChatApp = () => {
             )}
         </div>
     );
-};
-
-const styles = {
-    chatContainer: {
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 1000,
-    },
-    toggleButton: {
-        padding: '10px 15px',
-        backgroundColor: '#4caf50',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-    chatBox: {
-        backgroundColor: '#fff',
-        border: '1px solid #ccc',
-        padding: '20px',
-        width: '300px',
-        borderRadius: '10px',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-    },
-    messagesContainer: {
-        height: '200px',
-        overflowY: 'auto',
-        border: '1px solid #ddd',
-        padding: '10px',
-        marginBottom: '10px',
-    },
-    message: {
-        marginBottom: '10px',
-    },
-    inputContainer: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    input: {
-        width: '80%',
-        padding: '10px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-    },
-    sendButton: {
-        padding: '10px 15px',
-        backgroundColor: '#4caf50',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
 };
 
 export default ChatApp;
