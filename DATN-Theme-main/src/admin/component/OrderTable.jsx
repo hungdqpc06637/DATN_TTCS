@@ -394,7 +394,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
                       disabled={order.status === '99' || order.status === '4' || order.status === '5'} // Disable khi thanh toán thất bại, đã hoàn thành, hoặc đã hủy
                     >
-                      <option value="0" className="text-yellow-600 bg-white">Đã thanh toán</option>
+                      <option value="0" className="text-yellow-600 bg-white">Đã thanh toán, chờ xác nhận</option>
                       <option value="1" className="text-yellow-600 bg-white">Chờ xác nhận</option>
                       <option value="2" className="text-blue-600 bg-white">Đã xác nhận</option>
                       <option value="3" className="text-orange-600 bg-white">Đang giao hàng</option>

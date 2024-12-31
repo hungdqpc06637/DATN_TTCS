@@ -464,90 +464,100 @@ const FlashSaleManagementPage = () => {
       <ToastContainer position="top-right" autoClose={1000} />
 
       <div className="container mx-auto p-6">
-        <h2 className="text-5xl font-extrabold text-transparent bg-gradient-to-r from-red-500 via-orange-400 to-yellow-500 mb-8 text-center 
-  bg-clip-text  transition-all duration-300 p-6 rounded-lg 
-  hover:scale-105 transform">
+        <h2 className="text-6xl font-extrabold text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 mb-8 text-center 
+bg-clip-text transition-all duration-300 p-6 rounded-lg 
+hover:scale-105 transform">
           Quản lý Chương Trình Giảm Giá
         </h2>
 
+
+
         <form className="space-y-6" onSubmit={handleSaveFlashSale}>
-          {/* Tên Chương Trình */}
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-lg font-semibold text-gray-700">
-              Tên chương trình:
-            </label>
-            <input
-              type="text"
-              id="name"
-              placeholder="Nhập tên chương trình"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <div className="flex items-center space-x-8 mb-4">
+            {/* Tên Chương Trình */}
+            <div className="flex-1">
+              <label htmlFor="name" className="block text-lg font-semibold text-gray-700">
+                Tên chương trình:
+              </label>
+              <input
+                type="text"
+                id="name"
+                placeholder="Nhập tên chương trình"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-          {/* Ngày Bắt Đầu */}
-          <div className="mb-4">
-            <label htmlFor="startdate" className="block text-lg font-semibold text-gray-700">
-              Ngày bắt đầu:
-            </label>
-            <input
-              type="datetime-local"
-              id="startdate"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+            {/* Ngày Bắt Đầu */}
+            <div className="flex-1">
+              <label htmlFor="startdate" className="block text-lg font-semibold text-gray-700">
+                Ngày bắt đầu:
+              </label>
+              <input
+                type="datetime-local"
+                id="startdate"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                required
+                className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-          {/* Ngày Kết Thúc */}
-          <div className="mb-4">
-            <label htmlFor="enddate" className="block text-lg font-semibold text-gray-700">
-              Ngày kết thúc:
-            </label>
-            <input
-              type="datetime-local"
-              id="enddate"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            {/* Ngày Kết Thúc */}
+            <div className="flex-1">
+              <label htmlFor="enddate" className="block text-lg font-semibold text-gray-700">
+                Ngày kết thúc:
+              </label>
+              <input
+                type="datetime-local"
+                id="enddate"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                required
+                className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
           {/* Nút Thêm hoặc Cập Nhật */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-40 p-4 bg-transparent text-blue-600 font-semibold border-4 border-blue-600 rounded-full shadow-xl relative overflow-hidden group focus:outline-none"
-          >
-            <span className="absolute inset-0 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-all duration-500 ease-in-out z-0"></span>
-            <span className="relative z-10 text-blue group-hover:text-white">
-              {loading ? 'Đang xử lý...' : selectedFlashSale ? 'Cập nhật' : 'Thêm mới'}
-            </span>
-          </button>
+          <div className="flex justify-center space-x-4">
+            {/* Nút Thêm hoặc Cập Nhật */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-40 p-4 bg-transparent text-blue-600 font-semibold border-4 border-blue-600 rounded-full shadow-xl relative overflow-hidden group focus:outline-none"
+            >
+              <span className="absolute inset-0 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-all duration-500 ease-in-out z-0"></span>
+              <span className="relative z-10 text-blue group-hover:text-white">
+                {loading ? 'Đang xử lý...' : selectedFlashSale ? 'Cập nhật' : 'Thêm mới'}
+              </span>
+            </button>
 
-          {/* Nút Hủy */}
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="w-40 p-4 bg-gray-200 text-gray-800 font-semibold rounded-full shadow-xl hover:bg-gray-300"
-          >
-            Hủy
-          </button>
+            {/* Nút Hủy */}
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="w-40 p-4 bg-gray-200 text-gray-800 font-semibold rounded-full shadow-xl hover:bg-gray-300"
+            >
+              Hủy
+            </button>
+          </div>
+
         </form>
+
 
 
       </div>
 
       <div className="mt-6">
-      <h2 className="text-4xl font-extrabold mb-6 text-center 
-  shadow-md hover:shadow-lg transition-all duration-300 
-  p-4 rounded-lg bg-gradient-to-r from-red-500 to-red-700 text-white">
-  Quản lý Sản Phẩm Trong Chương Trình Giảm Giá
-</h2>
+        <h2 className="text-4xl font-extrabold mb-6 text-center 
+  shadow-lg hover:shadow-2xl transition-all duration-300 
+  p-4 rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:text-yellow-300">
+          Quản lý Sản Phẩm Trong Chương Trình Giảm Giá
+        </h2>
+
 
 
 
@@ -612,9 +622,11 @@ const FlashSaleManagementPage = () => {
 
       {/* Danh sách Flash Sale */}
       <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg mt-6">
-        <p className="text-lg font-bold text-red-600 bg-red-100 p-4 border border-red-600 rounded-md text-center mt-2 mb-5 ">
+        <p className="text-lg font-bold text-red-600 bg-red-100 p-4 border border-red-600 rounded-md text-center mt-2 mb-5 
+  transition-all duration-300 hover:bg-red-500 hover:text-white hover:scale-105 hover:shadow-lg">
           LƯU Ý: CHỈ ĐƯỢC PHÉP BẬT 1 CHƯƠNG TRÌNH FLASH SALES!!!
         </p>
+
         <table className="w-full table-auto border-collapse bg-white shadow-sm rounded-lg">
           <thead>
             <tr className="bg-blue-500 text-white">

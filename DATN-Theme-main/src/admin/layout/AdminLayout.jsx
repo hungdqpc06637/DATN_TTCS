@@ -243,7 +243,7 @@ const AdminLayout = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <div className="bg-gray-800 shadow-lg py-4 px-8 flex items-center justify-between">
+        <div className="bg-gray-500 shadow-lg py-4 px-8 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button className="text-white" onClick={toggleSidebar}>
               <FaBars size={24} />

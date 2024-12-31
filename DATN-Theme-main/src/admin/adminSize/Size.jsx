@@ -506,52 +506,54 @@ const SizeManagementPage = () => {
           Quản lý Kích Thước Sản Phẩm
         </h1>
 
-        <div className="bg-white rounded-xl overflow-hidden shadow-lg">
-          <table className="min-w-full table-auto text-gray-800">
-            <thead className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
+        <div className="bg-white overflow-hidden">
+          <table className="w-full table-auto text-gray-800">
+            <thead className="bg-blue-500 text-white">
               <tr>
-                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Sản phẩm</th>
-                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Kích thước</th>
-                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Màu</th>
-                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Tồn kho</th>
-                <th className="py-4 px-6 text-left font-semibold text-lg tracking-wider">Hành động</th>
+                <th className="py-3 px-4 text-left font-medium">Sản phẩm</th>
+                <th className="py-3 px-4 text-left font-medium">Kích thước</th>
+                <th className="py-3 px-4 text-left font-medium">Màu</th>
+                <th className="py-3 px-4 text-left font-medium">Tồn kho</th>
+                <th className="py-3 px-4 text-left font-medium">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {currentItems.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-6 text-center text-gray-500">
-                    Không có dữ liệu để hiển thị
-                  </td>
+                  <td colSpan={5} className="py-4 text-center text-gray-500">Không có dữ liệu để hiển thị</td>
                 </tr>
               ) : (
                 currentItems.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-100 transition-colors duration-300">
-                    <td className="py-4 px-6 border-b border-gray-300">{item.product.name}</td>
-                    <td className="py-4 px-6 border-b border-gray-300">{item.name}</td>
-                    <td className="py-4 px-6 border-b border-gray-300 flex items-center gap-2">
-                      <span
-                        className="inline-block w-6 h-6 rounded-full border border-gray-200"
-                        style={{ backgroundColor: item.color.name }}
-                      ></span>
-                      {item.color.name}
+                  <tr key={index} className="hover:bg-gray-100">
+                    <td className="py-3 px-4 border-b align-middle">{item.product.name}</td>
+                    <td className="py-3 px-4 border-b align-middle">{item.name}</td>
+                    <td className="py-3 px-4 border-b align-middle">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="inline-block w-5 h-5 rounded-full border shrink-0"
+                          style={{ backgroundColor: item.color.name }}
+                        ></span>
+                        <span>{item.color.name}</span>
+                      </div>
                     </td>
-                    <td className="py-4 px-6 border-b border-gray-300 text-gray-600">{item.quantityInStock}</td>
-                    <td className="py-4 px-6 border-b border-gray-300 flex gap-3">
-                      <button
-                        onClick={() => handleEditProduct(item)}
-                        className="flex items-center justify-center bg-yellow-400 text-white px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors duration-300 shadow-sm"
-                        aria-label="Chỉnh sửa"
-                      >
-                        <AiOutlineEdit size={20} />
-                      </button>
-                      <button
-                        onClick={() => deleteSize(item.id)}
-                        className="flex items-center justify-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 shadow-sm"
-                        aria-label="Xóa"
-                      >
-                        <AiOutlineDelete size={20} />
-                      </button>
+                    <td className="py-3 px-4 border-b align-middle">{item.quantityInStock}</td>
+                    <td className="py-3 px-4 border-b align-middle">
+                      <div className="flex gap-2 items-center">
+                        <button
+                          onClick={() => handleEditProduct(item)}
+                          className="text-yellow-500 hover:text-yellow-600"
+                          aria-label="Chỉnh sửa"
+                        >
+                          <AiOutlineEdit size={18} />
+                        </button>
+                        <button
+                          onClick={() => deleteSize(item.id)}
+                          className="text-red-500 hover:text-red-600"
+                          aria-label="Xóa"
+                        >
+                          <AiOutlineDelete size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
