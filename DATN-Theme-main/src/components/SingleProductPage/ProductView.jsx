@@ -21,7 +21,18 @@ export default function ProductView() {
   const [availableSizes, setAvailableSizes] = useState([]);
   const token = Cookies.get('token');
   let userInfo = null;
+  const [zoom, setZoom] = React.useState(false);
+  const [mouseX, setMouseX] = React.useState(50);
+  const [mouseY, setMouseY] = React.useState(50);
 
+  const handleMouseMove = (e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMouseX(x);
+    setMouseY(y);
+    setZoom(true);
+  };
   if (token) {
     try {
       userInfo = jwtDecode(token);
@@ -33,37 +44,37 @@ export default function ProductView() {
 
   const addToCart = async () => {
     const token = Cookies.get('token');
-  
+
     // Kiểm tra kích cỡ
     if (!selectedSize) {
       toast.error('Vui lòng chọn kích cỡ.');
       return;
     }
-  
+
     // Kiểm tra số lượng hợp lệ
     if (quantity <= 0 || isNaN(quantity)) {
       toast.error('Số lượng không hợp lệ.');
       return;
     }
-  
+
     // Lấy thông tin kích cỡ đã chọn
     const selectedSizeInfo = availableSizes.find(size => size.name === selectedSize);
     if (!selectedSizeInfo) {
       toast.error('Kích cỡ không hợp lệ.');
       return;
     }
-  
+
     // Kiểm tra tồn kho
     const cartItems = JSON.parse(Cookies.get('cart') || '[]');
     const existingItem = cartItems.find(item => item.size.id === selectedSizeInfo.id);
     const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
     const newTotalQuantity = currentQuantityInCart + quantity;
-  
+
     if (newTotalQuantity > selectedSizeInfo.quantityInStock) {
       toast.error(`Số lượng không thể vượt quá số lượng có sẵn trong kho. Chỉ còn ${selectedSizeInfo.quantityInStock - currentQuantityInCart} sản phẩm.`);
       return;
     }
-  
+
     // Tạo đối tượng giỏ hàng
     const cartItem = {
       id: null, // ID tạm thời, sẽ được server trả về
@@ -80,7 +91,7 @@ export default function ProductView() {
         }
       }
     };
-  
+
     // Cập nhật giỏ hàng trong state và cookie
     const updatedCartItems = [...cartItems];
     const existingItemIndex = updatedCartItems.findIndex(item => item.size.id === cartItem.size.id);
@@ -91,11 +102,11 @@ export default function ProductView() {
     }
     setCartItems(updatedCartItems);
     Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
-  
+
     // Gửi yêu cầu đến server
     try {
       let response;
-  
+
       if (!token) {
         response = await axios.post('http://localhost:8080/api/guest/carts', cartItem);
       } else {
@@ -105,7 +116,7 @@ export default function ProductView() {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
-  
+
       if (response.data && response.data.id) {
         cartItem.id = response.data.id; // Cập nhật ID của mục giỏ hàng
         toast.success('Sản phẩm đã được thêm vào giỏ hàng.');
@@ -118,7 +129,7 @@ export default function ProductView() {
       console.error('Error adding product to cart:', error);
     }
   };
-  
+
   useEffect(() => {
     if (cartItems.length > 0) {
       Cookies.set('cart', JSON.stringify(cartItems), { expires: 7 });
@@ -287,13 +298,23 @@ export default function ProductView() {
     <div className="product-view w-full flex justify-center">
       <ToastContainer position="top-right" autoClose={1000} hideProgressBar={false} />
       <div className="product-image-container lg:w-1/2 xl:mr-16 lg:mr-8">
-        <div className="relative overflow-hidden mb-4 rounded-lg shadow-lg border">
+        <div
+          className="relative overflow-hidden mb-4 rounded-lg shadow-lg border group"
+          onMouseMove={(e) => handleMouseMove(e)}
+          onMouseLeave={() => setZoom(false)}
+        >
           {src ? (
-            <img
-              src={`/assets/images/${src}`}
-              alt="Product Image"
-              className="w-full h-full object-cover"
-            />
+            <div
+              className={`w-full h-full transition-transform duration-300 ${zoom ? "scale-[2]" : "scale-100"
+                }`}
+              style={zoom ? { transformOrigin: `${mouseX}% ${mouseY}%` } : {}}
+            >
+              <img
+                src={`/assets/images/${src}`}
+                alt="Product Image"
+                className="w-full h-full object-cover"
+              />
+            </div>
           ) : (
             <div className="text-center text-qgray">Không có hình ảnh nào</div>
           )}
@@ -311,7 +332,8 @@ export default function ProductView() {
             <div
               onClick={() => changeImgHandler(img.image)}
               key={index}
-              className={`w-[90px] h-[90px] border cursor-pointer p-2 rounded-md ${src === img.image ? "border-qred" : "border-gray-300"}`}
+              className={`w-[90px] h-[90px] border cursor-pointer p-2 rounded-md ${src === img.image ? "border-qred" : "border-gray-300"
+                }`}
             >
               <img
                 src={`/assets/images/${img.image}`}
@@ -324,6 +346,7 @@ export default function ProductView() {
           )}
         </div>
       </div>
+
 
       <div className="product-details flex-1 p-8">
         <h2 className="text-3xl font-semibold mb-6">{productName}</h2>
