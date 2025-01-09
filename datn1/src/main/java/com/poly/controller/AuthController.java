@@ -1,6 +1,9 @@
 package com.poly.controller;
 
 import java.time.LocalDateTime;
+import com.poly.dto.OrderRequestDTO;
+import com.poly.dto.OrderStatisticsDTO;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,13 +29,16 @@ import com.poly.dto.AccountDTO;
 import com.poly.dto.AccountUpdateDTO;
 import com.poly.dto.ContactDTO;
 import com.poly.dto.Forgotpassword;
+import com.poly.dto.OrderDetailsDTO;
+import com.poly.dto.OrderRequestDTO;
 import com.poly.entity.Account;
 import com.poly.entity.Authorities;
 import com.poly.model.ChangePasswordModel;
 import com.poly.repository.AccountRepository;
 import com.poly.service.AccountService;
 import com.poly.util.EmailUtil;
-
+import java.util.List;
+import java.util.ArrayList;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -191,6 +197,8 @@ public class AuthController {
 		}
 	}
 
+
+
 	
 
 	@PostMapping("/send")
@@ -207,6 +215,27 @@ public class AuthController {
 			return ResponseEntity.status(500).body("Đã xảy ra lỗi khi gửi thông tin liên hệ. Vui lòng thử lại sau.");
 		}
 	}
+	
+
+	@PostMapping("/send-order-confirmation")
+	public ResponseEntity<String> sendOrderConfirmationEmail(
+	        @RequestParam String toEmail, 
+	        @RequestParam String subject, 
+	        @RequestBody List<OrderStatisticsDTO> orderDetailsList) {
+	    
+	    try {
+	        // Gọi phương thức gửi email
+	        emailUtil.sendOrderConfirmationEmail(toEmail, subject, orderDetailsList);
+	        
+	        // Phản hồi thành công
+	        return ResponseEntity.ok("Đơn hàng đã được xác nhận và email đã được gửi.");
+	    } catch (Exception e) {
+	        // Xử lý lỗi nếu có
+	        return ResponseEntity.status(500).body("Đã xảy ra lỗi khi gửi email.");
+	    }
+	}
+
+
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
