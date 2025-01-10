@@ -1,6 +1,7 @@
 package com.poly.controller;
 
 import java.util.List;
+import com.poly.util.EmailUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.poly.dto.OrderRequestDTO;
 import com.poly.entity.Orders;
 import com.poly.service.OrdersService;
+import com.poly.util.EmailUtil;
 
 @RestController
 @RequestMapping("/api/user/orders")
@@ -30,6 +32,9 @@ public class OrdersController {
 
 	@Autowired
 	private OrdersService ordersService;
+
+	@Autowired
+	private EmailUtil emailUtil;
 
 	@PostMapping("/create")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'USER')")
@@ -91,12 +96,19 @@ public class OrdersController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Trả về mã 401 Unauthorized
 		}
 		int result = ordersService.updateOrderStatusById1(orderId, "5");
+		Orders orders = ordersService.getOrderById(orderId);
 
+		emailUtil.sendOrderCancellationEmail(orders.getAccount().getEmail(), "Hủy Đơn Hàng",
+				orders.getAccount().getFullname(), orderId);
+
+		// Kiểm tra kết quả từ việc gửi email
 		if (result > 0) {
-			return ResponseEntity.ok("Order status updated to 5 (completed).");
+			return ResponseEntity.ok("Order status updated to 5 (completed) and email sent.");
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found or update failed.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Order status updated but email failed to send.");
 		}
+
 	}
 
 	// API đếm số lượng đơn hàng có status = 1 theo accountId

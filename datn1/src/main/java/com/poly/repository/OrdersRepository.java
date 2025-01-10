@@ -28,4 +28,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Integer> {
 	// Đếm số lượng đơn hàng có status và thuộc accountId cụ thể
     long countByStatusAndAccount_Id(Integer status, Integer accountId);
 
+    @Query("SELECT o FROM Orders o WHERE o.ID = :id")
+    Orders findOrderIdById(@Param("id") Integer id);   
 }

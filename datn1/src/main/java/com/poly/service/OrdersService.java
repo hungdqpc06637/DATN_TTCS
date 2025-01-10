@@ -134,7 +134,7 @@ public class OrdersService {
 	    return savedOrder;
 	}
 
-
+	
 	// Phương thức xóa giỏ hàng''
 	@Transactional
 	private void deleteCartFromDatabase(Integer id, Integer accountId) {
@@ -329,4 +329,7 @@ public class OrdersService {
 	public List<OrderDetails> getListOrder(int id) {
 		return orderDetailsRepository.findByOrderId(id);
 	}
+	 public Orders getOrderById(Integer id) {
+	        return ordersRepository.findOrderIdById(id);
+	    }
 }

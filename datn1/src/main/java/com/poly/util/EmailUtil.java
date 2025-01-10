@@ -101,13 +101,12 @@ public class EmailUtil {
 
 
 
-    public String sendOrderCancellationEmail(String toEmail, String subject, String customerName, String orderId, String reason) {
+    public String sendOrderCancellationEmail(String toEmail, String subject, String customerName, int orderId) {
         // Tạo nội dung email
         String content = "Xin chào " + customerName + ","
                 + "\r\n\r\n"
                 + "Chúng tôi rất tiếc thông báo rằng đơn hàng của bạn với mã đơn hàng: " + orderId + " đã bị hủy."
                 + "\r\n"
-                + "Lý do hủy: " + reason
                 + "\r\n\r\n"
                 + "Nếu bạn cần hỗ trợ hoặc muốn đặt hàng lại, vui lòng liên hệ với chúng tôi qua email hoặc số hotline.\r\n"
                 + "\r\n"
@@ -125,6 +124,8 @@ public class EmailUtil {
         // Trả về thông báo xác nhận đã gửi email
         return "Email thông báo hủy đơn hàng đã được gửi tới " + toEmail;
     }
+    
+    
 
     public String sendAccountRegistrationEmail(String toEmail, String subject, String customerName) {
         // Tạo nội dung email
