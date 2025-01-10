@@ -26,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.poly.config.AdminNotificationHandler;
 import com.poly.dto.OrderRequestDTO;
+import com.poly.dto.OrderStatisticsDTO;
 import com.poly.entity.Orders;
 import com.poly.entity.Payment;
 import com.poly.service.OrdersService;
 import com.poly.service.PaymentService;
 import com.poly.service.VNPayService;
-
+import com.poly.util.EmailUtil;
 @RestController
 @RequestMapping("/api/user/payments")
 public class PaymentController {
@@ -47,16 +48,19 @@ public class PaymentController {
 
 	@Autowired
 	private AdminNotificationHandler adminNotificationHandler;
-
+	
+	@Autowired
+	private EmailUtil emailUtil;
 	// Endpoint để tạo URL thanh toán
     @PostMapping("/create-payment-url")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'USER')")
     public ResponseEntity<Map<String, String>> createPaymentUrl(@RequestBody OrderRequestDTO orderRequestDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, String> response = new HashMap<>();
         // Kiểm tra xác thực
         if (authentication == null || !authentication.isAuthenticated()) {
             logger.error("Authentication is null or not authenticated.");
-            Map<String, String> response = new HashMap<>();
+            
             response.put("message", "You are not authorized to perform this action.");
             return ResponseEntity.ok(response);
         }
@@ -69,23 +73,26 @@ public class PaymentController {
                 // Gửi thông báo cho tất cả admin qua WebSocket
                 adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt với thanh toán VNPay! ID đơn hàng: " + orders.getId());
                 // Trả về link thanh toán dưới dạng JSON
-                Map<String, String> response = new HashMap<>();
                 response.put("vnpayUrl", paymentUrl);
                 return ResponseEntity.ok(response);
             } else {
                 // Gửi thông báo cho tất cả admin khi paymentId không phải là 1
                 adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt. ID đơn hàng: " + orders.getId());
                 // Trả về phản hồi thành công
-                Map<String, String> response = new HashMap<>();
                 response.put("message", "Đơn hàng đã được xử lý thành công!");
-                return ResponseEntity.ok(response);
             }
+            
+            emailUtil.sendOrderConfirmationEmail(orders.getAccount().getEmail(),"Đặt Hàng Thành Công", null);
+
+            return ResponseEntity.ok(response);
+            
         } catch (Exception e) {
             // Xử lý khi có lỗi và trả về thông báo lỗi
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
-        }
+        }      
+        
     }
     
 	@GetMapping("/vnpay/callback")

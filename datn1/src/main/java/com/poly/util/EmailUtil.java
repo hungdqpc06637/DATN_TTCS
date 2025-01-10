@@ -82,7 +82,7 @@ public class EmailUtil {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);  // Địa chỉ email người nhận
         message.setSubject(subject);  // Chủ đề email
-        message.setText(emailContent.toString());  // Nội dung email
+        message.setText("Hello");  // Nội dung email
 
         // Gửi email qua mailSender
         mailSender.send(message);
