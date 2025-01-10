@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.poly.config.AdminNotificationHandler;
 import com.poly.dto.OrderRequestDTO;
 import com.poly.dto.OrderStatisticsDTO;
+import com.poly.entity.OrderDetails;
 import com.poly.entity.Orders;
 import com.poly.entity.Payment;
 import com.poly.service.OrdersService;
@@ -67,6 +68,9 @@ public class PaymentController {
 
         try {
             Orders orders = ordersService.createOrder(orderRequestDTO);
+            
+            List<OrderDetails> details = ordersService.getListOrder(orders.getId());
+            
             if (orderRequestDTO.getPaymentId() == 1) {
                 // Gọi phương thức createPaymentUrl để tạo link thanh toán
                 String paymentUrl = paymentService.createPaymentUrl(orders, orderRequestDTO.getCartItems());
@@ -74,7 +78,6 @@ public class PaymentController {
                 adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt với thanh toán VNPay! ID đơn hàng: " + orders.getId());
                 // Trả về link thanh toán dưới dạng JSON
                 response.put("vnpayUrl", paymentUrl);
-                return ResponseEntity.ok(response);
             } else {
                 // Gửi thông báo cho tất cả admin khi paymentId không phải là 1
                 adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt. ID đơn hàng: " + orders.getId());
@@ -82,7 +85,7 @@ public class PaymentController {
                 response.put("message", "Đơn hàng đã được xử lý thành công!");
             }
             
-            emailUtil.sendOrderConfirmationEmail(orders.getAccount().getEmail(),"Đặt Hàng Thành Công", null);
+            emailUtil.sendOrderConfirmationEmail(orders.getAccount().getEmail(),"Đặt Hàng Thành Công", details);
 
             return ResponseEntity.ok(response);
             

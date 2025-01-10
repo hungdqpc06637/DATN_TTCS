@@ -325,4 +325,8 @@ public class OrdersService {
 	public long countOrdersWithStatusFourByAccountId(Integer accountId) {
 		return ordersRepository.countByStatusAndAccount_Id(4, accountId);
 	}
+	
+	public List<OrderDetails> getListOrder(int id) {
+		return orderDetailsRepository.findByOrderId(id);
+	}
 }

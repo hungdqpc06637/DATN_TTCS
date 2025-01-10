@@ -6,6 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import com.poly.dto.OrderRequestDTO; // Đường dẫn này phải khớp với package thực tế của lớp
 import com.poly.dto.OrderStatisticsDTO;
+import com.poly.entity.OrderDetails;
 import com.poly.dto.CartDTO;
 import com.poly.dto.ContactDTO;
 import java.util.List;
@@ -55,7 +56,7 @@ public class EmailUtil {
     
  
 
-    public void sendOrderConfirmationEmail(String toEmail, String subject, List<OrderStatisticsDTO> orderDetailsList) {
+    public void sendOrderConfirmationEmail(String toEmail, String subject, List<OrderDetails> orderDetailsList) {
         // Tạo nội dung email
         StringBuilder emailContent = new StringBuilder();
         emailContent.append("Xin chào bạn,\n\n")
@@ -64,12 +65,12 @@ public class EmailUtil {
                 .append("----------------------------------\n");
 
         // Lặp qua danh sách các sản phẩm trong đơn hàng và tạo bảng thông tin
-        for (OrderStatisticsDTO orderDetail : orderDetailsList) {
-            emailContent.append("Tên sản phẩm: ").append(orderDetail.getProductName()).append("\n")
-                    .append("Giá: ").append(orderDetail.getProductPrice()).append(" VND\n")
+        for (OrderDetails orderDetail : orderDetailsList) {
+            emailContent.append("Tên sản phẩm: ").append(orderDetail.getSize().getProduct().getName()).append("\n")
+                    .append("Giá: ").append(orderDetail.getPrice()).append(" VND\n")
                     .append("Số lượng: ").append(orderDetail.getQuantity()).append("\n")
-                    .append("Tổng tiền: ").append(orderDetail.getTotal()).append(" VND\n")
-                    .append("Ngày đặt hàng: ").append(orderDetail.getOrderDate()).append("\n")
+//                    .append("Tổng tiền: ").append(orderDetail.getTotal()).append(" VND\n")
+                    .append("Ngày đặt hàng: ").append(orderDetail.getOrder().getDate()).append("\n")
                     .append("----------------------------------\n");
         }
 
@@ -82,7 +83,7 @@ public class EmailUtil {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);  // Địa chỉ email người nhận
         message.setSubject(subject);  // Chủ đề email
-        message.setText("Hello");  // Nội dung email
+        message.setText(emailContent.toString());  // Nội dung email
 
         // Gửi email qua mailSender
         mailSender.send(message);
@@ -90,10 +91,10 @@ public class EmailUtil {
         System.out.println("Email đơn hàng đã được gửi đến " + toEmail);
     }
 
-    private Double calculateTotalAmount(List<OrderStatisticsDTO> orderDetailsList) {
+    private Double calculateTotalAmount(List<OrderDetails> orderDetailsList) {
         double totalAmount = 0.0;
-        for (OrderStatisticsDTO orderDetail : orderDetailsList) {
-            totalAmount += orderDetail.getTotal();
+        for (OrderDetails orderDetail : orderDetailsList) {
+            totalAmount += orderDetail.getPrice().intValue() * orderDetail.getQuantity();
         }
         return totalAmount;
     }
