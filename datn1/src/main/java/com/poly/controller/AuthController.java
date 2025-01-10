@@ -226,6 +226,15 @@ public class AuthController {
 			// Đăng ký tài khoản mới
 			Account newAccount = accountService.register(registerRequest.getFullname(), registerRequest.getUsername(),
 					registerRequest.getPassword(), registerRequest.getEmail(), registerRequest.getPhone());
+            // Gửi email chào mừng
+            String emailResponse = emailUtil.sendAccountRegistrationEmail(
+                    registerRequest.getEmail(), 
+                    "Xác nhận đăng ký tài khoản", 
+                    registerRequest.getFullname()
+            );
+
+            // Đảm bảo gửi email thành công trước khi trả về kết quả
+            System.out.println(emailResponse); // Log email response nếu cần
 			return ResponseEntity.status(HttpStatus.CREATED).body(newAccount);
 		} catch (RuntimeException e) {
 			// Ghi log chi tiết để debug
@@ -233,6 +242,7 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
+	
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {

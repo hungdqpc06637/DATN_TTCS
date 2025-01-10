@@ -108,7 +108,7 @@ public class EmailUtil {
                 + "Chúng tôi rất tiếc thông báo rằng đơn hàng của bạn với mã đơn hàng: " + orderId + " đã bị hủy."
                 + "\r\n"
                 + "\r\n\r\n"
-                + "Nếu bạn cần hỗ trợ hoặc muốn đặt hàng lại, vui lòng liên hệ với chúng tôi qua email hoặc số hotline.\r\n"
+                + "Nếu bạn cần hỗ trợ hoặc muốn đặt hàng lại, vui lòng liên hệ với chúng tôi qua email hoặc số hotline:0963845867 hoặc gửi mail để được hỗ trợ\r\n"
                 + "\r\n"
                 + "Trân trọng,\r\n"
                 + "Thời trang công sở";
@@ -135,7 +135,7 @@ public class EmailUtil {
                 + "\r\n"
                 + "Tài khoản của bạn đã được đăng ký thành công. Bạn có thể đăng nhập để khám phá những sản phẩm và ưu đãi mới nhất từ chúng tôi."
                 + "\r\n\r\n"
-                + "Nếu bạn cần hỗ trợ, vui lòng liên hệ với chúng tôi qua email hoặc hotline."
+                + "Nếu bạn cần hỗ trợ, vui lòng liên hệ với chúng tôi qua email hoặc hotline:0963845867 hoặc gửi mail để được hỗ trợ"
                 + "\r\n"
                 + "Chúc bạn có những trải nghiệm mua sắm tuyệt vời!\r\n"
                 + "\r\n"
