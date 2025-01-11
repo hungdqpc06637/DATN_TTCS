@@ -33,8 +33,6 @@ function App() {
 
   return (
     <CartProvider> {/* Bọc ứng dụng trong CartProvider */}
-      {/* Chỉ hiển thị ChatApp nếu không phải trang admin */}
-      {!isAdminPage && <ChatApp />}
       <Routers />
       <ToastContainer />
     </CartProvider>

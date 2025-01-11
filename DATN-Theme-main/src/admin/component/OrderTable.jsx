@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { jwtDecode } from "jwt-decode"; // Sửa import cho jwtDecode
 import Pagination from "./Pagination";
-
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import 'sweetalert2/dist/sweetalert2.min.css'; // Import style của sweetalert2
 
 export default function OrderTab({ accountId: initialAccountId }) {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -17,6 +19,8 @@ export default function OrderTab({ accountId: initialAccountId }) {
   const [orderId, setOrderId] = useState('');
   const [orderDate, setOrderDate] = useState('');
   const [status, setStatus] = useState('');
+  const MySwal = withReactContent(Swal);
+
   // Lọc đơn hàng theo các tiêu chí tìm kiếm
   // Lọc đơn hàng theo các tiêu chí tìm kiếm
   const filteredOrders = orders.filter((order) => {
@@ -126,34 +130,54 @@ export default function OrderTab({ accountId: initialAccountId }) {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-
-      const order = orders.find(order => order.id === orderId);
-
-      if (order.status == 4 || order.status >= newStatus) {
-        toast.error("Không thể thay đổi trạng thái đơn hàng");
-        return;
-      }
-      // Gọi API để cập nhật trạng thái đơn hàng
-      const response = await axios.put('http://localhost:8080/api/staff/orders', null, {
-        params: { orderId, status: newStatus },
-        headers: {
-          'Authorization': `Bearer ${token}`, // Thay 'token' bằng token xác thực của bạn
+      // Hiển thị thông báo xác nhận với màu nút tùy chỉnh bằng Tailwind CSS
+      MySwal.fire({
+        title: 'Xác nhận thay đổi trạng thái',
+        text: 'Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Không',
+        customClass: {
+          confirmButton: 'bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md', // Lớp Tailwind cho nút "Có"
+          cancelButton: 'bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md',   // Lớp Tailwind cho nút "Không"
         },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // Nếu người dùng xác nhận, tiếp tục thực hiện thay đổi trạng thái đơn hàng
+          const order = orders.find(order => order.id === orderId);
+
+          if (order.status == 4 || order.status >= newStatus) {
+            toast.error("Không thể thay đổi trạng thái đơn hàng");
+            return;
+          }
+
+          // Gọi API để cập nhật trạng thái đơn hàng
+          const response = await axios.put('http://localhost:8080/api/staff/orders', null, {
+            params: { orderId, status: newStatus },
+            headers: {
+              'Authorization': `Bearer ${token}`, // Thay 'token' bằng token xác thực của bạn
+            },
+          });
+
+          // Giả sử `response.data` chứa đối tượng `Orders` đã cập nhật
+          const updatedOrder = response.data.data;
+
+          // Cập nhật danh sách `orders` trong state
+          setOrders((prevOrders) =>
+            prevOrders.map((order) =>
+              order.id === updatedOrder.id ? updatedOrder : order
+            )
+          );
+
+          if (response.data.status === "201") {
+            toast.success("Cập nhật trạng thái đơn hàng thành công");
+          }
+        } else {
+          // Nếu người dùng không xác nhận, chỉ cần thông báo
+          toast.info("Thay đổi trạng thái đơn hàng đã bị hủy");
+        }
       });
-
-      // Giả sử `response.data` chứa đối tượng `Orders` đã cập nhật
-      const updatedOrder = response.data.data;
-
-      // Cập nhật danh sách `orders` trong state
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === updatedOrder.id ? updatedOrder : order
-        )
-      );
-
-      if (response.data.status === "201") {
-        toast.success("Cập nhật trạng thái đơn hàng thành công");
-      }
     } catch (error) {
       if (error.response) {
         // Kiểm tra mã lỗi từ server trả về
@@ -170,6 +194,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
       console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
     }
   };
+
 
   const handlePrintBill = () => {
     const printWindow = window.open("", "_blank");
@@ -402,7 +427,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
                       {/* Ẩn "Đã hủy" nếu trạng thái là "Đã xác nhận" hoặc "Đang giao hàng" */}
                       {order.status !== '2' && order.status !== '3' && (
                         <option value="5" className="text-red-600 bg-white">Đã hủy</option>
-                      )} 
+                      )}
                       {order.status === '99' && (
                         <option value="99" className="text-gray-600 bg-white">Thanh toán thất bại ví VNPay</option>
                       )}
@@ -567,6 +592,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
                 Đóng
               </button>
             </div>
+            <ToastContainer autoClose={1000}/>
           </div>
         </>
       )}

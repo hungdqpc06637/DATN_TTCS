@@ -1,8 +1,7 @@
 import { useState } from "react";
 import InputCom from "../../Helpers/InputCom";
-import Thumbnail from "./Thumbnail";
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LayoutHomeFive from "../../Partials/LayoutHomeFive";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +75,12 @@ export default function Signup() {
     try {
       await axios.post('http://localhost:8080/api/signup', formData);
       toast.success('Đăng ký thành công!');
-      navigate("/login");
+    
+      // Dùng setTimeout để trì hoãn chuyển trang
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000); // Thời gian trì hoãn là 2000ms (2 giây)
+    
     } catch (error) {
       if (error.response) {
         const errorMessage = error.response.data.message || error.response.data;
@@ -89,6 +93,7 @@ export default function Signup() {
         toast.error('Đăng ký thất bại. Vui lòng thử lại sau.');
       }
     }
+    
   };
 
 
@@ -222,6 +227,7 @@ export default function Signup() {
       </div>
     </div>
   </div>
+  <ToastContainer autoClose={1000}/>
 </LayoutHomeFive>
 
 

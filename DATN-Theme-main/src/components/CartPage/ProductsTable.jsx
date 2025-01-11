@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import CartContext from "../Context/CartContext";
 
 export default function ProductsTable({ onSelectedTotalChange, accountId }) {
-  const {cartItems, setCartItems} =useContext(CartContext);
+  const { cartItems, setCartItems } = useContext(CartContext);
   const [products, setProducts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // State for error handling
@@ -128,49 +128,50 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
     Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
   };
 
-  const handleQuantityChange = async (id, change) => {
-    // Tìm sản phẩm trong giỏ hàng
-    const itemToUpdate = cartItems.find(item => item.id === id);
+  const handleQuantityChange = async (sizeId, change) => {
+    // Tìm sản phẩm trong giỏ hàng theo sizeId
+    const itemToUpdate = cartItems.find(item => item.size?.id === sizeId);
+  
     if (!itemToUpdate) {
-      console.error('Không tìm thấy sản phẩm trong giỏ hàng.');
+      console.error('Không tìm thấy sản phẩm trong giỏ hàng với sizeId:', sizeId);
       return;
     }
-
+  
     // Lấy thông tin tồn kho từ sản phẩm
-    const selectedSizeInfo = itemToUpdate.size;  // Dữ liệu size từ cart item đã có thông tin tồn kho
+    const selectedSizeInfo = itemToUpdate.size;
     if (!selectedSizeInfo) {
       console.error('Không tìm thấy thông tin kích cỡ sản phẩm.');
       return;
     }
-
+  
     // Tính toán số lượng mới
     const newQuantity = Math.max(Number(itemToUpdate.quantity) + Number(change), 1);
-
+  
     // Kiểm tra tồn kho
     if (newQuantity > selectedSizeInfo.quantityInStock) {
       toast.error(`Số lượng vượt quá tồn kho. Chỉ còn ${selectedSizeInfo.quantityInStock} sản phẩm.`);
       return;
     }
-
+  
     // Cập nhật số lượng trong giỏ hàng
     const updatedCartItems = cartItems.map(item => {
-      if (item.id === id) {
+      if (item.size?.id === sizeId) {
         return { ...item, quantity: newQuantity };
       }
       return item;
     });
-
+  
     // Cập nhật giỏ hàng trong state và cookie
     setCartItems(updatedCartItems);
     Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
-
+  
     // Nếu người dùng đã đăng nhập, gửi yêu cầu cập nhật lên server
     if (accountId) {
       try {
         await axios.put(
           `http://localhost:8080/api/guest/carts/quantity`,
           {
-            id: itemToUpdate.id,
+            sizeId: sizeId, // Cập nhật theo sizeId
             accountId: accountId,
             newQuantity: newQuantity
           },
@@ -188,6 +189,8 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
       }
     }
   };
+  
+
   // Tính tổng giá cho các mục đã chọn
   useEffect(() => {
     const total = cartItems.reduce((sum, item) => {
@@ -210,100 +213,90 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
 
   return (
     <div className="w-full p-6 bg-gray-50">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cartItems.length > 0 ? (
-          cartItems.map((item) => {
-            const product = products[item.size.productId] || {};
-            return (
-              <div
-                key={item.id}
-                className="relative bg-white border border-gray-200 rounded-lg shadow-md p-4 flex flex-col space-y-4"
-              >
-                {/* Hình ảnh sản phẩm */}
-                <div className="w-full h-48 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100">
-                  <img
-                    src={`/assets/images/${product.firstImage}`}
-                    alt="product"
-                    className="w-auto h-full object-contain"
-                  />
-                </div>
-
-                {/* Thông tin sản phẩm */}
-                <div className="flex flex-col space-y-2">
-                  <h3 className="font-bold text-lg text-gray-800">
-                    {product.name || 'Tên sản phẩm'}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">Màu:</span>
-                    <div
-                      className="w-5 h-5 rounded-full border"
-                      style={{ backgroundColor: item.size.color.name }}
-                    ></div>
-                  </div>
-                  <div className="text-sm text-gray-600">Kích cỡ: {item.size.name}</div>
-                </div>
-
-                {/* Giá và số lượng */}
-                <div className="flex flex-col space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Giá:</span>
-                    <span className="font-medium text-gray-800">
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto bg-white border border-gray-200">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Sản phẩm</th>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Màu</th>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Kích cỡ</th>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Giá</th>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Tạm tính</th>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Số lượng</th>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => {
+                const product = products[item.size.productId] || {};
+                return (
+                  <tr key={item.id} className="border-t border-gray-200">
+                    <td className="px-4 py-2">
+                      <div className="w-24 h-24 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+                        <img
+                          src={`/assets/images/${product.firstImage}`}
+                          alt="product"
+                          className="w-auto h-full object-contain"
+                        />
+                      </div>
+                      <h3 className="font-bold text-sm text-gray-800 mt-2">{product.name || 'Tên sản phẩm'}</h3>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div
+                        className="w-5 h-5 rounded-full border"
+                        style={{ backgroundColor: item.size.color.name }}
+                      ></div>
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{item.size.name}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">
                       {formatCurrency(product.price)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Tạm tính:</span>
-                    <span className="font-medium text-gray-800">
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-600">
                       {formatCurrency(item.quantity * product.price)}
-                    </span>
-                  </div>
-                </div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleQuantityChange(item.size.id, -1)} // Truyền cả id và sizeid
+                          className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                        >
+                          -
+                        </button>
+                        <span className="font-medium">{item.quantity}</span>
+                        <button
+                          onClick={() => handleQuantityChange(item.size.id, 1)} // Truyền cả id và sizeid
+                          className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
 
-                {/* Số lượng và hành động */}
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handleQuantityChange(item.id, -1)}
-                      className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      -
-                    </button>
-                    <span className="font-medium">{item.quantity}</span>
-                    <button
-                      onClick={() => handleQuantityChange(item.id, 1)}
-                      className="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="text-red-600 font-medium hover:underline"
-                  >
-                    Xóa
-                  </button>
-                </div>
-
-                {/* Checkbox chọn */}
-                <div className="absolute top-4 right-4">
-                  <input
-                    type="checkbox"
-                    checked={item.isSelected}
-                    onChange={() => handleSelectionChange(item.id)}
-                    className="cursor-pointer w-5 h-5 accent-black"
-                  />
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="col-span-full text-center text-gray-500">
-            Giỏ hàng của bạn đang trống
-          </div>
-        )}
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handleRemoveItem(item.id)}
+                        className="text-red-600 font-medium hover:underline"
+                      >
+                        Xóa
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="7" className="px-4 py-2 text-center text-gray-500">
+                  Giỏ hàng của bạn đang trống
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
       <ToastContainer autoClose={1000} />
     </div>
+
 
   );
 }

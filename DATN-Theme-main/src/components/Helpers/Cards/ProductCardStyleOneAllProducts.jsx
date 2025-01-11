@@ -1,8 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import QuickViewIco from "../icons/QuickViewIco";
-import Star from "../icons/Star";
-import ThinLove from "../icons/ThinLove";
 
 export default function ProductCardStyleOne({ data = {}, type = 1 }) {
   const navigate = useNavigate();
@@ -24,6 +21,7 @@ export default function ProductCardStyleOne({ data = {}, type = 1 }) {
     return '0 ₫';
   };
 
+  console.log(data)
   return (
     <div className="product-card w-full max-w-xs mx-auto bg-white shadow-lg overflow-hidden transform transition duration-300 ">
       {/* Product Image */}

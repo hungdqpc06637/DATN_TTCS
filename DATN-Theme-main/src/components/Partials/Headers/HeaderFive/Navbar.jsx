@@ -172,6 +172,9 @@ export default function Navbar({ className }) {
             <Link to="/all-products" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
              SẢN PHẨM
             </Link>
+            <Link to="/flash-sale" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
+             FLASH SALES
+            </Link>
             <Link to="/about" className="text-black text-sm font-medium hover:text-blue-600 transition-all duration-300">
               VỀ CHÚNG TÔI
             </Link>

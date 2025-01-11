@@ -530,12 +530,12 @@ const SizeManagementPage = () => {
                     <td className="py-3 px-4 border-b align-middle">
                       <div className="flex items-center gap-2">
                         <span
-                          className="inline-block w-5 h-5 rounded-full border shrink-0"
+                          className={`inline-block w-10 h-10 rounded-full border shrink-0 ${item.color.name === '#ffffff' ? 'border-gray-300' : 'border-gray-800'}`}
                           style={{ backgroundColor: item.color.name }}
                         ></span>
-                        <span>{item.color.name}</span>
                       </div>
                     </td>
+
                     <td className="py-3 px-4 border-b align-middle">{item.quantityInStock}</td>
                     <td className="py-3 px-4 border-b align-middle">
                       <div className="flex gap-2 items-center">
