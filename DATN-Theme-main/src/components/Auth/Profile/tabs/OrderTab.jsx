@@ -12,7 +12,7 @@ export default function OrderTab({ accountId: initialAccountId }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [accountId, setAccountId] = useState(initialAccountId);
   const [error, setError] = useState(null);
-  const [stars, setStars] = useState(1);
+  const [stars, setStars] = useState(5);
   const [review, setReview] = useState("");
   const [sizeId, setSizeId] = useState("");
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
