@@ -164,46 +164,46 @@ public class CartService {
 	}
 
 	private void saveCartToDatabase(CartDTO cartDTO) {
-	    validateCartDTO(cartDTO); // Kiểm tra đầu vào
+		validateCartDTO(cartDTO); // Kiểm tra đầu vào
 
-	    // Tìm Size
-	    Size size = sizeService.getSizeById(cartDTO.getSize().getId());
-	    if (size == null) {
-	        throw new IllegalArgumentException("Không tìm thấy kích thước.");
-	    }
+		// Tìm Size
+		Size size = sizeService.getSizeById(cartDTO.getSize().getId());
+		if (size == null) {
+			throw new IllegalArgumentException("Không tìm thấy kích thước.");
+		}
 
-	    // Kiểm tra stock
-	    int stock = size.getQuantityInStock();
-	    if (cartDTO.getQuantity() > stock) {
-	        throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn kho.");
-	    }
+		// Kiểm tra stock
+		int stock = size.getQuantityInStock();
+		if (cartDTO.getQuantity() > stock) {
+			throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn kho.");
+		}
 
-	    // Tìm giỏ hàng có cùng Account, Size và Color
-	    List<Carts> existingCarts = cartRepository.findByAccountIdAndSizeIdAndColorId(
-	            cartDTO.getAccountId(), size.getId(), cartDTO.getSize().getColor().getId());
+		// Tìm giỏ hàng có cùng Account, Size và Color
+		List<Carts> existingCarts = cartRepository.findByAccountIdAndSizeIdAndColorId(cartDTO.getAccountId(),
+				size.getId(), cartDTO.getSize().getColor().getId());
 
-	    Carts cart;
-	    if (!existingCarts.isEmpty()) {
-	        cart = existingCarts.get(0);
+		Carts cart;
+		if (!existingCarts.isEmpty()) {
+			cart = existingCarts.get(0);
 
-	        // Kiểm tra tổng số lượng sau khi cộng
-	        int newQuantity = cart.getQuantity() + cartDTO.getQuantity();
-	        if (newQuantity > stock) {
-	            throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn kho.");
-	        }
+			// Kiểm tra tổng số lượng sau khi cộng
+			int newQuantity = cart.getQuantity() + cartDTO.getQuantity();
+			if (newQuantity > stock) {
+				throw new IllegalArgumentException("Số lượng vượt quá số lượng tồn kho.");
+			}
 
-	        // Cập nhật số lượng
-	        cart.setQuantity(newQuantity);
-	    } else {
-	        // Nếu không tồn tại, tạo mới giỏ hàng
-	        cart = new Carts();
-	        cart.setAccount(accountService.getAccountById(cartDTO.getAccountId())); // Lấy tài khoản
-	        cart.setSize(size);
-	        cart.setQuantity(cartDTO.getQuantity());
-	    }
+			// Cập nhật số lượng
+			cart.setQuantity(newQuantity);
+		} else {
+			// Nếu không tồn tại, tạo mới giỏ hàng
+			cart = new Carts();
+			cart.setAccount(accountService.getAccountById(cartDTO.getAccountId())); // Lấy tài khoản
+			cart.setSize(size);
+			cart.setQuantity(cartDTO.getQuantity());
+		}
 
-	    // Lưu vào cơ sở dữ liệu
-	    cartRepository.save(cart);
+		// Lưu vào cơ sở dữ liệu
+		cartRepository.save(cart);
 	}
 
 	@Transactional
@@ -247,131 +247,126 @@ public class CartService {
 	}
 
 	@Transactional
-	public void deleteCartById(Integer id, Integer accountId, HttpServletRequest request,
-	        HttpServletResponse response) throws IOException {
-	    if (accountId != null) {
-	        // Xóa từ cơ sở dữ liệu nếu người dùng đã đăng nhập
-	        deleteCartFromDatabase(id, accountId);
-	    } else {
-	        // Xóa từ cookie nếu người dùng chưa đăng nhập
-	        deleteCartFromCookie(id, request, response);
-	    }
+	public void deleteCartById(Integer id, Integer accountId, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		if (accountId != null) {
+			// Xóa từ cơ sở dữ liệu nếu người dùng đã đăng nhập
+			deleteCartFromDatabase(id, accountId);
+		} else {
+			// Xóa từ cookie nếu người dùng chưa đăng nhập
+			deleteCartFromCookie(id, request, response);
+		}
 	}
 
 	private void deleteCartFromDatabase(Integer id, Integer accountId) {
-	    System.out.println("Giá trị cartId: " + id);
-	    System.out.println("Giá trị accountId: " + accountId);
-	    
-	    Optional<Carts> cartOptional = cartRepository.findByIdAndAccountId(id, accountId);
-	    System.out.println("Tìm giỏ hàng: " + cartOptional);
+		System.out.println("Giá trị cartId: " + id);
+		System.out.println("Giá trị accountId: " + accountId);
 
-	    if (cartOptional.isPresent()) {
-	        cartRepository.delete(cartOptional.get());
-	        System.out.println("Giỏ hàng đã được xóa thành công.");
-	    } else {
-	        System.err.println("Không tìm thấy giỏ hàng với ID: " + id + " và Account ID: " + accountId);
-	        throw new NoSuchElementException("Không tìm thấy giỏ hàng.");
-	    }
+		Optional<Carts> cartOptional = cartRepository.findByIdAndAccountId(id, accountId);
+		System.out.println("Tìm giỏ hàng: " + cartOptional);
+
+		if (cartOptional.isPresent()) {
+			cartRepository.delete(cartOptional.get());
+			System.out.println("Giỏ hàng đã được xóa thành công.");
+		} else {
+			System.err.println("Không tìm thấy giỏ hàng với ID: " + id + " và Account ID: " + accountId);
+			throw new NoSuchElementException("Không tìm thấy giỏ hàng.");
+		}
 	}
-
 
 	private void deleteCartFromCookie(Integer id, HttpServletRequest request, HttpServletResponse response)
-	        throws IOException {
-	    Optional<Cookie> cartCookieOpt = findCookie("cart", request);
-	    if (cartCookieOpt.isEmpty()) {
-	        throw new IllegalArgumentException("Không có giỏ hàng nào trong cookie.");
-	    }
+			throws IOException {
+		Optional<Cookie> cartCookieOpt = findCookie("cart", request);
+		if (cartCookieOpt.isEmpty()) {
+			throw new IllegalArgumentException("Không có giỏ hàng nào trong cookie.");
+		}
 
-	    String cartJson = URLDecoder.decode(cartCookieOpt.get().getValue(), StandardCharsets.UTF_8);
-	    List<CartDTO> cartList = objectMapper.readValue(cartJson, new TypeReference<List<CartDTO>>() {});
+		String cartJson = URLDecoder.decode(cartCookieOpt.get().getValue(), StandardCharsets.UTF_8);
+		List<CartDTO> cartList = objectMapper.readValue(cartJson, new TypeReference<List<CartDTO>>() {
+		});
 
-	    // Lọc ra sản phẩm không khớp với cartId
-	    List<CartDTO> updatedCartList = cartList.stream()
-	            .filter(cartDTO -> !cartDTO.getId().equals(id))
-	            .collect(Collectors.toList());
+		// Lọc ra sản phẩm không khớp với cartId
+		List<CartDTO> updatedCartList = cartList.stream().filter(cartDTO -> !cartDTO.getId().equals(id))
+				.collect(Collectors.toList());
 
-	    // Cập nhật cookie
-	    String updatedCartJson = objectMapper.writeValueAsString(updatedCartList);
-	    Cookie cartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, StandardCharsets.UTF_8));
-	    cartCookie.setMaxAge(7 * 24 * 60 * 60);
-	    cartCookie.setHttpOnly(false);
-	    cartCookie.setPath("/");
-	    response.addCookie(cartCookie);
+		// Cập nhật cookie
+		String updatedCartJson = objectMapper.writeValueAsString(updatedCartList);
+		Cookie cartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, StandardCharsets.UTF_8));
+		cartCookie.setMaxAge(7 * 24 * 60 * 60);
+		cartCookie.setHttpOnly(false);
+		cartCookie.setPath("/");
+		response.addCookie(cartCookie);
 	}
-
 
 	@Transactional
-	public void updateCartQuantity(@RequestBody QuantityUpdateRequest request, HttpServletRequest httpRequest, HttpServletResponse response) throws IOException {
-	    Integer id = request.getId(); // Lấy ID từ request
-	    Integer accountId = request.getAccountId(); // Lấy accountId từ request
-	    Integer newQuantity = request.getNewQuantity(); // Lấy newQuantity từ request
+	public void updateCartQuantity(@RequestBody QuantityUpdateRequest request, HttpServletRequest httpRequest,
+			HttpServletResponse response) throws IOException {
+		Integer sizeId = request.getsizeId(); // Lấy sizeId từ request
+		Integer accountId = request.getAccountId(); // Lấy accountId từ request
+		Integer newQuantity = request.getNewQuantity(); // Lấy newQuantity từ request
 
-	    if (newQuantity <= 0) {
-	        throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
-	    }
+		if (newQuantity <= 0) {
+			throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
+		}
 
-	    if (accountId != null) {
-	        // Nếu người dùng đã đăng nhập, cập nhật trong cơ sở dữ liệu
-	        updateCartQuantityInDatabase(id, newQuantity);
-	    } else {
-	        // Nếu người dùng chưa đăng nhập, cập nhật trong cookie
-	        updateCartQuantityInCookie(id, newQuantity, httpRequest, response);
-	    }
+		if (accountId != null) {
+			// Nếu người dùng đã đăng nhập, cập nhật trong cơ sở dữ liệu
+			updateCartQuantityInDatabase(accountId, sizeId, newQuantity);
+		} else {
+			// Nếu người dùng chưa đăng nhập, cập nhật trong cookie
+			updateCartQuantityInCookie(sizeId, newQuantity, httpRequest, response);
+		}
 	}
 
+	private void updateCartQuantityInDatabase(Integer accountId, Integer sizeId, Integer newQuantity) {
+		System.out.println("Cập nhật số lượng cho sản phẩm với sizeId: " + sizeId + " và số lượng: " + newQuantity);
 
-	private void updateCartQuantityInDatabase(Integer id, Integer newQuantity) {
-	    System.out.println("Cập nhật số lượng cho sản phẩm ID: " + id + " với số lượng: " + newQuantity);
-	    
-	    Optional<Carts> optionalCart = cartRepository.findById(id);
-	    if (optionalCart.isPresent()) {
-	        Carts cart = optionalCart.get();
-	        cart.setQuantity(newQuantity);
-	        cartRepository.save(cart);
-	        System.out.println("Cập nhật thành công cho sản phẩm ID: " + id);
-	    } else {
-	        System.err.println("Không tìm thấy sản phẩm trong giỏ hàng với ID: " + id);
-	        throw new NoSuchElementException("Không tìm thấy sản phẩm trong giỏ hàng.");
-	    }
+		// Tìm giỏ hàng của người dùng theo accountId và sizeId
+		Optional<Carts> optionalCart = cartRepository.findByAccountIdAndSizeId(accountId, sizeId);
+		if (optionalCart.isPresent()) {
+			Carts cart = optionalCart.get();
+			cart.setQuantity(newQuantity);
+			cartRepository.save(cart);
+			System.out.println("Cập nhật thành công cho sản phẩm với sizeId: " + sizeId);
+		} else {
+			System.err.println("Không tìm thấy sản phẩm trong giỏ hàng với sizeId: " + sizeId);
+			throw new NoSuchElementException("Không tìm thấy sản phẩm trong giỏ hàng.");
+		}
 	}
 
+	private void updateCartQuantityInCookie(Integer sizeId, Integer newQuantity, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		Optional<Cookie> cartCookieOpt = findCookie("cart", request);
+		if (cartCookieOpt.isEmpty()) {
+			throw new IllegalArgumentException("Không có giỏ hàng nào trong cookie.");
+		}
 
+		String cartJson = URLDecoder.decode(cartCookieOpt.get().getValue(), StandardCharsets.UTF_8);
+		System.out.println("Cart JSON: " + cartJson);
 
+		List<CartDTO> cartList = objectMapper.readValue(cartJson, new TypeReference<List<CartDTO>>() {
+		});
+		System.out.println("Giỏ hàng hiện tại: " + cartList);
 
-	private void updateCartQuantityInCookie(Integer id, Integer newQuantity, HttpServletRequest request,
-	        HttpServletResponse response) throws IOException {
-	    Optional<Cookie> cartCookieOpt = findCookie("cart", request);
-	    if (cartCookieOpt.isEmpty()) {
-	        throw new IllegalArgumentException("Không có giỏ hàng nào trong cookie.");
-	    }
+		boolean found = false;
+		for (CartDTO cartDTO : cartList) {
+			if (cartDTO.getSize().getId().equals(sizeId)) {
+				cartDTO.setQuantity(newQuantity);
+				found = true;
+				break;
+			}
+		}
 
-	    String cartJson = URLDecoder.decode(cartCookieOpt.get().getValue(), StandardCharsets.UTF_8);
-	    System.out.println("Cart JSON: " + cartJson);
+		if (!found) {
+			throw new NoSuchElementException("Không tìm thấy sản phẩm trong giỏ hàng.");
+		}
 
-	    List<CartDTO> cartList = objectMapper.readValue(cartJson, new TypeReference<List<CartDTO>>() {});
-	    System.out.println("Giỏ hàng hiện tại: " + cartList);
-
-	    boolean found = false;
-	    for (CartDTO cartDTO : cartList) {
-	        if (cartDTO.getId().equals(id)) {
-	            cartDTO.setQuantity(newQuantity);
-	            found = true;
-	            break;
-	        }
-	    }
-
-	    if (!found) {
-	        throw new NoSuchElementException("Không tìm thấy sản phẩm trong giỏ hàng.");
-	    }
-
-	    String updatedCartJson = objectMapper.writeValueAsString(cartList);
-	    Cookie cartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, StandardCharsets.UTF_8));
-	    cartCookie.setMaxAge(7 * 24 * 60 * 60);
-	    cartCookie.setHttpOnly(false);
-	    cartCookie.setPath("/");
-	    response.addCookie(cartCookie);
+		String updatedCartJson = objectMapper.writeValueAsString(cartList);
+		Cookie cartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, StandardCharsets.UTF_8));
+		cartCookie.setMaxAge(7 * 24 * 60 * 60);
+		cartCookie.setHttpOnly(false);
+		cartCookie.setPath("/");
+		response.addCookie(cartCookie);
 	}
-
-
 
 }

@@ -27,8 +27,8 @@ public class ProductsController {
 
 	// Lấy tất cả sản phẩm (tên, giá, hình ảnh đầu tiên)
 	@GetMapping
-	public ResponseEntity<List<SimpleProductDTO>> getAllProducts() {
-		List<SimpleProductDTO> products = productsService.getAllProducts();
+	public ResponseEntity<List<ProductDTO>> getAllProductsd() {
+		List<ProductDTO> products = productsService.getAllProductsd();
 		return new ResponseEntity<>(products, HttpStatus.OK);
 	}
 

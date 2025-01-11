@@ -28,4 +28,8 @@ public interface CartsRepository extends JpaRepository<Carts, Integer> {
 	// Thêm phương thức xóa dựa trên cartId và sizeId
 	@Query("DELETE FROM Carts c WHERE c.id = :cartId AND c.size.id = :sizeId")
 	void deleteByCartIdAndSizeId(@Param("cartId") Integer cartId, @Param("sizeId") Integer sizeId);
+	
+	@Query("SELECT c FROM Carts c WHERE c.account.id = :accountId AND c.size.id = :sizeId")
+	Optional<Carts> findByAccountIdAndSizeId(@Param("accountId") Integer accountId, @Param("sizeId") Integer sizeId);
+
 }

@@ -1,17 +1,17 @@
 package com.poly.dto;
 
 public class QuantityUpdateRequest {
-    private Integer id;
+    private Integer sizeId;
     private Integer accountId;
     private Integer newQuantity;
 
     // Getter và Setter
-    public Integer getId() {
-        return id;
+    public Integer getsizeId() {
+        return sizeId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setsizeId(Integer sizeId) {
+        this.sizeId = sizeId;
     }
 
     public Integer getAccountId() {
