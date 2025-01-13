@@ -10,6 +10,8 @@ import com.poly.entity.OrderDetails;
 import com.poly.dto.CartDTO;
 import com.poly.dto.ContactDTO;
 import java.util.List;
+import java.util.Locale;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import java.util.Random;
@@ -67,16 +69,15 @@ public class EmailUtil {
         // Lặp qua danh sách các sản phẩm trong đơn hàng và tạo bảng thông tin
         for (OrderDetails orderDetail : orderDetailsList) {
             emailContent.append("Tên sản phẩm: ").append(orderDetail.getSize().getProduct().getName()).append("\n")
-                    .append("Giá: ").append(orderDetail.getPrice()).append(" VND\n")
+                    .append("Giá: ").append(formatVND(orderDetail.getSize().getProduct().getPrice().doubleValue())).append("\n")
                     .append("Số lượng: ").append(orderDetail.getQuantity()).append("\n")
-//                    .append("Tổng tiền: ").append(orderDetail.getTotal()).append(" VND\n")
                     .append("Ngày đặt hàng: ").append(orderDetail.getOrder().getDate()).append("\n")
                     .append("----------------------------------\n");
         }
 
         // Tính tổng giá trị đơn hàng
-        double totalAmount = calculateTotalAmount(orderDetailsList);
-        emailContent.append("Tổng giá trị đơn hàng: ").append(totalAmount).append(" VND\n")
+        String totalAmount = calculateTotalAmount(orderDetailsList);
+        emailContent.append("Tổng giá trị đơn hàng: ").append(totalAmount).append("\n")
                 .append("\nTrân trọng,\nThời trang công sở");
 
         // Tạo và gửi email
@@ -91,12 +92,12 @@ public class EmailUtil {
         System.out.println("Email đơn hàng đã được gửi đến " + toEmail);
     }
 
-    private Double calculateTotalAmount(List<OrderDetails> orderDetailsList) {
+    private String calculateTotalAmount(List<OrderDetails> orderDetailsList) {
         double totalAmount = 0.0;
         for (OrderDetails orderDetail : orderDetailsList) {
-            totalAmount += orderDetail.getPrice().intValue() * orderDetail.getQuantity();
+            totalAmount = orderDetail.getPrice().doubleValue();
         }
-        return totalAmount;
+        return formatVND(totalAmount);
     }
 
 
@@ -190,9 +191,12 @@ public class EmailUtil {
         adminMessage.setText(adminContent);
         mailSender.send(adminMessage);
     }
-
-
-
+    
+    public String formatVND(double amount) {
+        // Sử dụng Locale Việt Nam
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return currencyFormat.format(amount);
+    }
 }
 
 

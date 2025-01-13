@@ -131,28 +131,28 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
   const handleQuantityChange = async (sizeId, change) => {
     // Tìm sản phẩm trong giỏ hàng theo sizeId
     const itemToUpdate = cartItems.find(item => item.size?.id === sizeId);
-  
+
     if (!itemToUpdate) {
       console.error('Không tìm thấy sản phẩm trong giỏ hàng với sizeId:', sizeId);
       return;
     }
-  
+
     // Lấy thông tin tồn kho từ sản phẩm
     const selectedSizeInfo = itemToUpdate.size;
     if (!selectedSizeInfo) {
       console.error('Không tìm thấy thông tin kích cỡ sản phẩm.');
       return;
     }
-  
+
     // Tính toán số lượng mới
     const newQuantity = Math.max(Number(itemToUpdate.quantity) + Number(change), 1);
-  
+
     // Kiểm tra tồn kho
     if (newQuantity > selectedSizeInfo.quantityInStock) {
       toast.error(`Số lượng vượt quá tồn kho. Chỉ còn ${selectedSizeInfo.quantityInStock} sản phẩm.`);
       return;
     }
-  
+
     // Cập nhật số lượng trong giỏ hàng
     const updatedCartItems = cartItems.map(item => {
       if (item.size?.id === sizeId) {
@@ -160,11 +160,11 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
       }
       return item;
     });
-  
+
     // Cập nhật giỏ hàng trong state và cookie
     setCartItems(updatedCartItems);
     Cookies.set('cart', JSON.stringify(updatedCartItems), { expires: 7 });
-  
+
     // Nếu người dùng đã đăng nhập, gửi yêu cầu cập nhật lên server
     if (accountId) {
       try {
@@ -189,7 +189,7 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
       }
     }
   };
-  
+
 
   // Tính tổng giá cho các mục đã chọn
   useEffect(() => {
@@ -217,6 +217,7 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
         <table className="min-w-full table-auto bg-white border border-gray-200">
           <thead>
             <tr>
+              <th className="px-4 py-2 text-left text-sm text-gray-600">Chọn</th>
               <th className="px-4 py-2 text-left text-sm text-gray-600">Sản phẩm</th>
               <th className="px-4 py-2 text-left text-sm text-gray-600">Màu</th>
               <th className="px-4 py-2 text-left text-sm text-gray-600">Kích cỡ</th>
@@ -232,6 +233,14 @@ export default function ProductsTable({ onSelectedTotalChange, accountId }) {
                 const product = products[item.size.productId] || {};
                 return (
                   <tr key={item.id} className="border-t border-gray-200">
+                    <td className="px-4 py-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={item.isSelected}
+                        onChange={() => handleSelectionChange(item.id)}
+                        className="cursor-pointer w-5 h-5 accent-black"
+                      />
+                    </td>
                     <td className="px-4 py-2">
                       <div className="w-24 h-24 flex items-center justify-center overflow-hidden rounded-lg bg-gray-100">
                         <img
