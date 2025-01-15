@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import LayoutHomeFive from '../../Partials/LayoutHomeFive';
 import { useNavigate } from 'react-router-dom';
@@ -43,6 +44,7 @@ export default function Forgotpassword() {
 
   return (
     <LayoutHomeFive childrenClasses="pt-0 pb-0">
+    <ToastContainer autoClose={1000} />
       <div className="login-page-wrapper w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-100">
         <div className="relative w-full max-w-md bg-white shadow-2xl rounded-lg p-10">
           {/* Hiệu ứng trang trí */}

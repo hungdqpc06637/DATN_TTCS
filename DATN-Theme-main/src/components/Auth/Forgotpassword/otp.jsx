@@ -1,5 +1,5 @@
 import { useState } from 'react'; // Import useState để quản lý state
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import InputCom from '../../Helpers/InputCom'; // Đường dẫn tới InputCom
 import LayoutHomeFive from '../../Partials/LayoutHomeFive';
@@ -43,6 +43,7 @@ export default function Otp() {
 
   return (
     <LayoutHomeFive childrenClasses="pt-0 pb-0">
+      <ToastContainer autoClose={1000} />
       <div className="login-page-wrapper w-full py-10">
         <div className="container-x mx-auto">
           <div className="flex justify-center items-center">

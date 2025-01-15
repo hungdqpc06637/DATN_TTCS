@@ -167,7 +167,7 @@ export default function ProfileTab() {
               name="email"
               placeholder="demoemail@gmail.com"
               type="email"
-              inputClasses="h-[50px] w-full sm:w-[70%] mb-4 sm:mb-0"
+              inputClasses="h-[50px] w-full sm:w-[90%] mb-4 sm:mb-0"
               value={accountInfo.email || ''}
               inputHandler={handleInputChange}
             />

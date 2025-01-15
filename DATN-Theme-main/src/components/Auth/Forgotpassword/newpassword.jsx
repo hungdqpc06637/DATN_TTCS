@@ -4,6 +4,7 @@ import LayoutHomeFive from '../../Partials/LayoutHomeFive';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 export default function Newpassword() {
   const [newPassword, setNewPassword] = useState("");
@@ -58,6 +59,7 @@ export default function Newpassword() {
 
   return (
     <LayoutHomeFive childrenClasses="pt-0 pb-0">
+      <ToastContainer autoClose={1000} />
       <div className="changePasswordTab w-full py-10">
       <div className="absolute -top-10 -left-10 w-32 h-32 bg-pink-300 rounded-full opacity-30 blur-2xl"></div>
       <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-300 rounded-full opacity-30 blur-2xl"></div>
