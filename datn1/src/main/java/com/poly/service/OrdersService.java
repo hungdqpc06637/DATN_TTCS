@@ -63,78 +63,76 @@ public class OrdersService {
 
 	@Autowired
 	private CartsRepository cartRepository;
-	
+
 	@Autowired
 	private FlashsaleRepository flashsaleRepository;
-	
 
 	@Transactional
 	public Orders createOrder(OrderRequestDTO orderRequest) {
-	    // Tạo đối tượng Orders mới
-	    Orders order = new Orders();
-	    order.setDate(LocalDateTime.now());
-	    order.setNote(orderRequest.getNote());
-	    order.setStatus(1); // 1 là trạng thái mới
+		// Tạo đối tượng Orders mới
+		Orders order = new Orders();
+		order.setDate(LocalDateTime.now());
+		order.setNote(orderRequest.getNote());
+		order.setStatus(1); // 1 là trạng thái mới
 
-	    // Liên kết Account, Address, Payment, ShippingMethod
-	    Account account = accountRepository.findById(orderRequest.getAccountId())
-	            .orElseThrow(() -> new RuntimeException("Account not found"));
-	    Address address = addressRepository.findById(orderRequest.getAddressId())
-	            .orElseThrow(() -> new RuntimeException("Address not found"));
-	    Payment payment = paymentRepository.findById(orderRequest.getPaymentId())
-	            .orElseThrow(() -> new RuntimeException("Payment method not found"));
-	    ShippingMethods shippingMethod = shippingMethodsRepository.findById(orderRequest.getShippingMethodId())
-	            .orElseThrow(() -> new RuntimeException("Shipping method not found"));
+		// Liên kết Account, Address, Payment, ShippingMethod
+		Account account = accountRepository.findById(orderRequest.getAccountId())
+				.orElseThrow(() -> new RuntimeException("Account not found"));
+		Address address = addressRepository.findById(orderRequest.getAddressId())
+				.orElseThrow(() -> new RuntimeException("Address not found"));
+		Payment payment = paymentRepository.findById(orderRequest.getPaymentId())
+				.orElseThrow(() -> new RuntimeException("Payment method not found"));
+		ShippingMethods shippingMethod = shippingMethodsRepository.findById(orderRequest.getShippingMethodId())
+				.orElseThrow(() -> new RuntimeException("Shipping method not found"));
 
-	    order.setAccount(account);
-	    order.setAddress(address);
-	    order.setPayment(payment);
-	    order.setShippingMethod(shippingMethod);
+		order.setAccount(account);
+		order.setAddress(address);
+		order.setPayment(payment);
+		order.setShippingMethod(shippingMethod);
 
-	    // Lưu đơn hàng
-	    Orders savedOrder = ordersRepository.save(order);
+		// Lưu đơn hàng
+		Orders savedOrder = ordersRepository.save(order);
 
-	    // Xử lý giỏ hàng và giảm tồn kho
-	    List<CartDTO> cartItems = orderRequest.getCartItems();
-	    for (CartDTO cartItem : cartItems) {
-	        logger.info("Processing cart item: {}", cartItem);
+		// Xử lý giỏ hàng và giảm tồn kho
+		List<CartDTO> cartItems = orderRequest.getCartItems();
+		for (CartDTO cartItem : cartItems) {
+			logger.info("Processing cart item: {}", cartItem);
 
-	        // Lấy Size từ SizeDTO
-	        Size size = sizeRepository.findById(cartItem.getSize().getId())
-	                .orElseThrow(() -> new RuntimeException("Size not found"));
+			// Lấy Size từ SizeDTO
+			Size size = sizeRepository.findById(cartItem.getSize().getId())
+					.orElseThrow(() -> new RuntimeException("Size not found"));
 
-	        // Kiểm tra xem size có product không
-	        if (size.getProduct() == null) {
-	            throw new RuntimeException("Product not found for size: " + size.getId());
-	        }
+			// Kiểm tra xem size có product không
+			if (size.getProduct() == null) {
+				throw new RuntimeException("Product not found for size: " + size.getId());
+			}
 
-	        // Tạo OrderDetail và tính toán giá
-	        OrderDetails orderDetail = new OrderDetails();
-	        orderDetail.setOrder(savedOrder);
-	        orderDetail.setSize(size);
-	        orderDetail.setQuantity(cartItem.getQuantity());
+			// Tạo OrderDetail và tính toán giá
+			OrderDetails orderDetail = new OrderDetails();
+			orderDetail.setOrder(savedOrder);
+			orderDetail.setSize(size);
+			orderDetail.setQuantity(cartItem.getQuantity());
 
-	        BigDecimal price = size.getProduct().getPrice().multiply(new BigDecimal(cartItem.getQuantity()));
-	        orderDetail.setPrice(price);
+			BigDecimal price = size.getProduct().getPrice().multiply(new BigDecimal(cartItem.getQuantity()));
+			orderDetail.setPrice(price);
 
-	        // Kiểm tra tồn kho
-	        if (size.getQuantityInStock() < cartItem.getQuantity()) {
-	            throw new RuntimeException("Insufficient stock for size: " + size.getId());
-	        }
-	        size.setQuantityInStock(size.getQuantityInStock() - cartItem.getQuantity());
+			// Kiểm tra tồn kho
+			if (size.getQuantityInStock() < cartItem.getQuantity()) {
+				throw new RuntimeException("Insufficient stock for size: " + size.getId());
+			}
+			size.setQuantityInStock(size.getQuantityInStock() - cartItem.getQuantity());
 
-	        // Cập nhật Size và lưu OrderDetail
-	        sizeRepository.save(size);
-	        orderDetailsRepository.save(orderDetail);
-	    }
+			// Cập nhật Size và lưu OrderDetail
+			sizeRepository.save(size);
+			orderDetailsRepository.save(orderDetail);
+		}
 
-	    // Xóa sản phẩm khỏi giỏ hàng
-	    cartItems.forEach(cartItem -> deleteCartFromDatabase(cartItem.getId(), account.getId()));
+		// Xóa sản phẩm khỏi giỏ hàng
+		cartItems.forEach(cartItem -> deleteCartFromDatabase(cartItem.getId(), account.getId()));
 
-	    return savedOrder;
+		return savedOrder;
 	}
 
-	
 	// Phương thức xóa giỏ hàng''
 	@Transactional
 	private void deleteCartFromDatabase(Integer id, Integer accountId) {
@@ -173,36 +171,36 @@ public class OrdersService {
 
 			// Gán danh sách chi tiết vào đơn hàng
 			for (OrderDetails detail : orderDetails) {
-			    if (detail != null) {
-			        Size size = detail.getSize();
-			        if (size != null) {
-			            Products product = size.getProduct();
-			            if (product != null) {
-			                // Kiểm tra sản phẩm có nằm trong flash sale
-			                ProductFlashsale flashSale = flashsaleRepository.findFlashSaleByProductId(product.getId());
-			                if (flashSale != null) {
-			                    // Nếu có, tính giá mới sau khi giảm giá (giảm theo phần trăm)
-			                    BigDecimal originalPrice = product.getPrice();  // Giá gốc của sản phẩm
-			                    BigDecimal discountPercentage = flashSale.getDiscount();  // Phần trăm giảm giá
+				if (detail != null) {
+					Size size = detail.getSize();
+					if (size != null) {
+						Products product = size.getProduct();
+						if (product != null) {
+							// Kiểm tra sản phẩm có nằm trong flash sale
+							ProductFlashsale flashSale = flashsaleRepository.findFlashSaleByProductId(product.getId());
+							if (flashSale != null) {
+								// Nếu có, tính giá mới sau khi giảm giá (giảm theo phần trăm)
+								BigDecimal originalPrice = product.getPrice(); // Giá gốc của sản phẩm
+								BigDecimal discountPercentage = flashSale.getDiscount(); // Phần trăm giảm giá
 
-			                    // Tính giá sau khi giảm
-			                    BigDecimal discountAmount = originalPrice.multiply(discountPercentage).divide(BigDecimal.valueOf(100));  // Số tiền giảm
-			                    BigDecimal discountedPrice = originalPrice.subtract(discountAmount);  // Giá sau khi giảm
+								// Tính giá sau khi giảm
+								BigDecimal discountAmount = originalPrice.multiply(discountPercentage)
+										.divide(BigDecimal.valueOf(100)); // Số tiền giảm
+								BigDecimal discountedPrice = originalPrice.subtract(discountAmount); // Giá sau khi giảm
 
-			                    detail.setPrice(discountedPrice);  // Cập nhật giá vào chi tiết đơn hàng
-			                } else {
-			                    // Nếu không có flash sale, giữ giá gốc
-			                    detail.setPrice(product.getPrice());
-			                }
+								detail.setPrice(discountedPrice); // Cập nhật giá vào chi tiết đơn hàng
+							} else {
+								// Nếu không có flash sale, giữ giá gốc
+								detail.setPrice(product.getPrice());
+							}
 
-			                // Lấy hình ảnh của sản phẩm
-			                List<ProductImages> images = product.getImages();
-			                detail.setImages(images);
-			            }
-			        }
-			    }
+							// Lấy hình ảnh của sản phẩm
+							List<ProductImages> images = product.getImages();
+							detail.setImages(images);
+						}
+					}
+				}
 			}
-
 
 			order.setOrderDetails(orderDetails); // Gán danh sách chi tiết vào đơn hàng
 		}
@@ -212,47 +210,47 @@ public class OrdersService {
 
 	@Transactional
 	public List<Orders> getAllOrders() {
-	    List<Orders> orders = ordersRepository.findAll();
-	    if (orders.isEmpty()) {
-	        throw new NoSuchElementException("Không có đơn hàng nào trong hệ thống.");
-	    }
+		List<Orders> orders = ordersRepository.findAll();
+		if (orders.isEmpty()) {
+			throw new NoSuchElementException("Không có đơn hàng nào trong hệ thống.");
+		}
 
-	    System.out.println("Tổng số đơn hàng: " + orders.size());
-	    for (Orders order : orders) {
-	        // Kiểm tra địa chỉ
-	        if (order.getAddress() == null) {
-	            System.out.println("Địa chỉ hóa đơn ID " + order.getId() + " là null");
-	        }
+		System.out.println("Tổng số đơn hàng: " + orders.size());
+		for (Orders order : orders) {
+			// Kiểm tra địa chỉ
+			if (order.getAddress() == null) {
+				System.out.println("Địa chỉ hóa đơn ID " + order.getId() + " là null");
+			}
 
-	        // Lấy danh sách OrderDetails
-	        List<OrderDetails> orderDetails = orderDetailsRepository.findByOrderId(order.getId());
+			// Lấy danh sách OrderDetails
+			List<OrderDetails> orderDetails = orderDetailsRepository.findByOrderId(order.getId());
 
-	        // Gán hình ảnh cho từng chi tiết sản phẩm
-	        for (OrderDetails detail : orderDetails) {
-	            if (detail != null) {
-	                Size size = detail.getSize();
-	                if (size != null) {
-	                    Products product = size.getProduct();
-	                    if (product != null) {
-	                        // Lấy danh sách hình ảnh của sản phẩm
-	                        List<ProductImages> images = product.getImages();
-	                        detail.setImages(images);
-	                    }
-	                }
-	            }
-	        }
+			// Gán hình ảnh cho từng chi tiết sản phẩm
+			for (OrderDetails detail : orderDetails) {
+				if (detail != null) {
+					Size size = detail.getSize();
+					if (size != null) {
+						Products product = size.getProduct();
+						if (product != null) {
+							// Lấy danh sách hình ảnh của sản phẩm
+							List<ProductImages> images = product.getImages();
+							detail.setImages(images);
+						}
+					}
+				}
+			}
 
-	        // Gán danh sách OrderDetails vào đơn hàng
-	        order.setOrderDetails(orderDetails);
-	    }
+			// Gán danh sách OrderDetails vào đơn hàng
+			order.setOrderDetails(orderDetails);
+		}
 
-	    return orders; // Trả về danh sách đơn hàng với chi tiết và hình ảnh
+		return orders; // Trả về danh sách đơn hàng với chi tiết và hình ảnh
 	}
-
 
 	public int updateOrderStatusById1(int orderId, String status) {
 		return ordersRepository.updateOrderStatusById(orderId, status);
 	}
+
 	public Orders updateOrderStatus(int orderId, String status) {
 		// Gọi phương thức cập nhật
 		int updatedCount = ordersRepository.updateOrderStatusById(orderId, status);
@@ -265,6 +263,7 @@ public class OrdersService {
 			throw new EntityNotFoundException("Cập nhật thất bại, không tìm thấy đơn hàng với ID: " + orderId);
 		}
 	}
+
 	// Phương thức kiểm tra sự tồn tại của order
 	public boolean checkOrderExists(int orderID) {
 		return ordersRepository.existsById(orderID);
@@ -325,11 +324,16 @@ public class OrdersService {
 	public long countOrdersWithStatusFourByAccountId(Integer accountId) {
 		return ordersRepository.countByStatusAndAccount_Id(4, accountId);
 	}
-	
+
 	public List<OrderDetails> getListOrder(int id) {
 		return orderDetailsRepository.findByOrderId(id);
 	}
-	 public Orders getOrderById(Integer id) {
-	        return ordersRepository.findOrderIdById(id);
-	    }
+
+	public Orders getOrderById(Integer id) {
+		return ordersRepository.findOrderIdById(id);
+	}
+	
+	public Account getAccountByOrder(Integer id) {
+		return accountRepository.findByOrderId(id);
+	}
 }

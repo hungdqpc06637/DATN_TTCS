@@ -27,9 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.poly.config.AdminNotificationHandler;
 import com.poly.dto.OrderRequestDTO;
 import com.poly.dto.OrderStatisticsDTO;
+import com.poly.entity.Account;
 import com.poly.entity.OrderDetails;
 import com.poly.entity.Orders;
 import com.poly.entity.Payment;
+import com.poly.service.AccountService;
 import com.poly.service.OrdersService;
 import com.poly.service.PaymentService;
 import com.poly.service.VNPayService;
@@ -42,7 +44,7 @@ public class PaymentController {
 	private PaymentService paymentService;
 	@Autowired
 	private OrdersService ordersService;
-
+	
 	@Autowired
 	private VNPayService vnPayService;
 	private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
@@ -82,10 +84,11 @@ public class PaymentController {
                 // Gửi thông báo cho tất cả admin khi paymentId không phải là 1
                 adminNotificationHandler.notifyAdmins("Đơn hàng mới đã được đặt. ID đơn hàng: " + orders.getId());
                 // Trả về phản hồi thành công
+                emailUtil.sendOrderConfirmationEmail(orders.getAccount().getEmail(),"Đặt Hàng Thành Công", details);
                 response.put("message", "Đơn hàng đã được xử lý thành công!");
             }
             
-            emailUtil.sendOrderConfirmationEmail(orders.getAccount().getEmail(),"Đặt Hàng Thành Công", details);
+            
 
             return ResponseEntity.ok(response);
             
@@ -115,16 +118,19 @@ public class PaymentController {
 			boolean checkOrderId = ordersService.checkOrderExists(orderID);
 			boolean checkOrderStatus = ordersService.checkOrderStatus(orderID);
 
+			List<OrderDetails> details = ordersService.getListOrder(orderID);
+			Account account = ordersService.getAccountByOrder(orderID);
 			if (checkOrderId) {
 				if (checkOrderStatus) {
 					// Cập nhật trạng thái thanh toán
 					if ("00".equals(vnp_ResponseCode)) {
 						ordersService.updateOrderStatus(orderID, 0); // 0 là trạng thái thành công
-
+						 
 						// Điều hướng đến trang Success với các thông tin cần thiết
 						String redirectUrl = String.format(
 								"http://localhost:5173/checkout/succes?orderID=%d&amount=%s&paymentMethod=VNPay",
 								orderID, vnp_Amount);
+						 emailUtil.sendOrderConfirmationEmail(account.getEmail(),"Đặt Hàng Thành Công", details);
 						return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
 					} else {
 						ordersService.updateOrderStatus(orderID, 99); // 99 là trạng thái thất bại
